@@ -1,0 +1,13 @@
+
+
+.widget-content {
+    height: 100%;
+}
+
+.widget-content.data-session {
+    overflow-y: auto;
+}
+
+.widget-content.console-session {
+    overflow-y: hidden;
+}

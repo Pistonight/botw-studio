@@ -1,0 +1,25 @@
+header {
+  background-color: #0088ff;
+}
+div#root {
+  height: 100vh;
+}
+
+.root {
+  height: 100vh;
+}
+
+.widget {
+  box-sizing: border-box;
+}
+
+
+
+.main {
+  height: 100vh;
+  background-color: #888888;
+}
+
+hr.separator {
+  margin: 0 5px 0 5px;
+}

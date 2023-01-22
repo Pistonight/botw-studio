@@ -1,0 +1,12 @@
+[submodule "switch/libs/exlaunch"]
+	path = switch/libs/exlaunch
+	url = git@github.com:shadowninja108/exlaunch.git
+[submodule "switch/libs/nnheaders"]
+	path = switch/libs/nnheaders
+	url = git@github.com:open-ead/nnheaders.git
+[submodule "switch/libs/sead"]
+	path = switch/libs/sead
+	url = git@github.com:open-ead/sead.git
+[submodule "switch/libs/botw"]
+	path = switch/libs/botw
+	url = git@github.com:zeldaret/botw.git

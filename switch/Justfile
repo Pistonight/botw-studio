@@ -1,0 +1,41 @@
+set dotenv-load
+
+ld:
+    mkdir -p build
+    python tools/gen_syms_ld.py src build/syms.ld
+
+build:
+    mkdir -p build
+    python tools/build_wrapper.py
+    objdump -T build/botw-gametools.elf > build/botw-gametools.syms
+    python tools/check_elf.py build/botw-gametools.syms 1.5.0
+    python tools/check_elf.py build/botw-gametools.syms 1.6.0
+
+relink:
+    rm -f build/*.elf build/*.nso
+    @just ld
+    @just build
+
+deploy:
+    python tools/ftp-cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
+    STOR build/botw-gametools.nso atmosphere/contents/01007EF00011E000/exefs/subsdk9 \
+    STOR build/botw-gametools.npdm atmosphere/contents/01007EF00011E000/exefs/main.npdm
+
+change-version:
+    python tools/ftp-cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
+    RNME atmosphere/contents/01007EF00011E000/exefs atmosphere/contents/01007EF00011E000/exefs-alt-2 \
+    RNME atmosphere/contents/01007EF00011E000/romfs atmosphere/contents/01007EF00011E000/romfs-alt-2 \
+    RNME atmosphere/contents/01007EF00011E000/exefs-alt atmosphere/contents/01007EF00011E000/exefs \
+    RNME atmosphere/contents/01007EF00011E000/romfs-alt atmosphere/contents/01007EF00011E000/romfs \
+    RNME atmosphere/contents/01007EF00011E000/exefs-alt-2 atmosphere/contents/01007EF00011E000/exefs-alt \
+    RNME atmosphere/contents/01007EF00011E000/romfs-alt-2 atmosphere/contents/01007EF00011E000/romfs-alt
+
+report:
+    python tools/ftp-cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
+    RTTR atmosphere/crash_reports crash_reports \
+    RMD atmosphere/crash_reports
+
+something:
+    
+clean:
+    rm -rf build

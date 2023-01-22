@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "devkitA64 + libnx + botw",
+            "includePath": [
+                "${workspaceFolder}/switch/src",
+                "${workspaceFolder}/switch/libs/exlaunch/source",
+                "${workspaceFolder}/switch/libs/exlaunch/source/lib",
+                "${workspaceFolder}/switch/libs/nnheaders/include",
+                "${workspaceFolder}/switch/libs/sead/include",
+                "/opt/devkitpro/devkitA64/lib/gcc/aarch64-none-elf/12.2.0/include",
+                "/opt/devkitpro/devkitA64/aarch64-none-elf/include",
+                "/opt/devkitpro/libnx/include"
+            ],
+            "defines": [
+                "__SWITCH__",
+                "SWITCH",
+                "NNSDK",
+                "__aarch64__",
+                "EXL_LOAD_KIND=Module",
+                "EXL_LOAD_KIND_ENUM=2",
+                "EXL_AS_MODULE"
+            ],
+            "compilerPath": "/opt/devkitpro/devkitA64/bin/aarch64-none-elf-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "gcc-arm64"
+        }
+    ],
+    "version": 4
+}

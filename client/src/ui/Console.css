@@ -1,0 +1,9 @@
+textarea.console {
+    resize: none;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-color: transparent;
+    color: inherit;
+    border: none;
+}
