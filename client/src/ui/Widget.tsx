@@ -3,7 +3,7 @@ import { Base16Theme, Theme } from "react-base16-styling";
 import { useGlobal } from "store/AppGlobal";
 import { isConsoleSession, isDataSession, Session, Widget } from "store/type";
 import { Loading } from "./Loading";
-import { getWidgetStylePropsFromTheme } from "./theme";
+import { getWidgetStylePropsFromTheme, isDarkTheme } from "../data/theme";
 import clsx from "clsx";
 import { Console } from "./Console";
 import "./Widget.css";
@@ -23,6 +23,7 @@ export const WidgetViewer: React.FC<WidgetProps> = ({widgetId}) => {
 	}, [sessionName]);
 
 	const session = sessions[sessionName];
+	const dark = isDarkTheme(theme);
 	let content: JSX.Element;
 	let sessionClass = "";
 	if (!session) {
@@ -39,7 +40,7 @@ export const WidgetViewer: React.FC<WidgetProps> = ({widgetId}) => {
 	const styleProps = useMemo(()=>getWidgetStylePropsFromTheme(theme), [theme]);
 
 	return (
-		<div className={clsx("widget-content", sessionClass)} {...styleProps} onContextMenu={(e)=>{
+		<div className={clsx("widget-content", dark ? "dark-color" : "light-color", sessionClass)} {...styleProps} onContextMenu={(e)=>{
 			openMenu(widgetId, e);
 		}}>
 			{content}            

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Theme } from "react-base16-styling";
 import { ThreeCircles } from "react-loader-spinner";
-import { getLoadingStylePropsFromTheme } from "./theme";
+import { getLoadingStylePropsFromTheme } from "../data/theme";
 import "./Loading.css";
 
 export type LoadingProps = {

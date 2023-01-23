@@ -1,32 +1,27 @@
 import { useContextMenu, MenuData } from "data/opensource";
+import { ThemeOptions } from "data/theme";
 import { useCallback } from "react";
-import { Widget } from "store/type";
+import { isConsoleSession, Widget } from "store/type";
 import { LayoutApi } from "../layout";
 import { canCloseSession, SessionApi } from "../session";
 import { WidgetApi } from "../widget";
 import { MenuItem, MenuItemProps } from "./MenuItem";
 import { Separator } from "./Separator";
 
-const ThemeOptions = [
-	["Default", undefined],
-	["Monokai", "monokai"],
-	["Ocean", "ocean"],
-	["Solarized", "solarized"],
-	["Mocha", "mocha"],
-	["Green", "green"],
-	["Bright", "bright:inverted"]
-] as const;
+
 
 const createMenu = (widgetId: number | undefined, sessionApi: SessionApi, widgetApi: WidgetApi, layoutApi: LayoutApi) => {
 	const menu: MenuData<MenuItemProps>[] = [];
 	const {widgets} = widgetApi;
 	// TODO: add widget specific actions
+
 	if(widgetId !== undefined){
-		createSessionMenuOptions(menu, widgetId, sessionApi, widgetApi);
+		addConsoleMenuOptions(menu, widgetId, sessionApi, widgetApi);
+		addSessionMenuOptions(menu, widgetId, sessionApi, widgetApi);
 	}
 	menu.push("separator");
 	if(widgetId !== undefined){
-		createThemeSubMenu(menu, widgetId, widgetApi);
+		addThemeSubMenu(menu, widgetId, widgetApi);
 	}
 	
 	addEditingLayoutOption(menu, layoutApi);
@@ -35,7 +30,73 @@ const createMenu = (widgetId: number | undefined, sessionApi: SessionApi, widget
 	return menu;
 }
 
-const createSessionMenuOptions = (menu: MenuData<MenuItemProps>[], widgetId: number, {
+const addConsoleMenuOptions = (menu: MenuData<MenuItemProps>[], widgetId: number, {
+	sessions,
+	setConsoleLogLevel,
+	setConsoleLogSource
+}: SessionApi, {
+	widgets
+}: WidgetApi) => {
+	const sessionName = widgets[widgetId].sessionName;
+	const session = sessions[sessionName];
+	if (!isConsoleSession(session)){
+		return;
+	}
+	menu.push(
+		[
+			"Level", 
+			[
+				[
+					"Debug",
+					() => setConsoleLogLevel(sessionName, "D"),
+					"Log debug, info, warn, and error messages",
+					{ checked: session.level === "D" }
+				],[
+					"Info",
+					() => setConsoleLogLevel(sessionName, "I"),
+					"Log info, warn, and error messages",
+					{ checked: session.level === "I" }
+				],[
+					"Warn",
+					() => setConsoleLogLevel(sessionName, "W"),
+					"Log warn and error messages",
+					{ checked: session.level === "W" }
+				],[
+					"Error",
+					() => setConsoleLogLevel(sessionName, "E"),
+					"Log only error messages",
+					{ checked: session.level === "E" }
+				]
+			],
+			{}
+		],
+		[
+			"Source",
+			[
+				[
+					"Client",
+					() => setConsoleLogSource(sessionName, "client", !session.enabled.client),
+					"Log messages from client",
+					{ checked: session.enabled.client }
+				],[
+					"Server",
+					() => setConsoleLogSource(sessionName, "server", !session.enabled.client),
+					"Log messages from internal server",
+					{ checked: session.enabled.server }
+				],[
+					"Switch",
+					() => setConsoleLogSource(sessionName, "switch", !session.enabled.client),
+					"Log messages from game server running on switch",
+					{ checked: session.enabled.switch }
+				]
+			],
+			{}
+		],
+		"separator"
+	);
+}
+
+const addSessionMenuOptions = (menu: MenuData<MenuItemProps>[], widgetId: number, {
 	sessionNames,
 	createConsoleSession,
 	createDataSession,
@@ -129,7 +190,7 @@ const createSessionMenuOptions = (menu: MenuData<MenuItemProps>[], widgetId: num
 	
 }
 
-const createThemeSubMenu = (menu: MenuData<MenuItemProps>[], widgetId: number, {
+const addThemeSubMenu = (menu: MenuData<MenuItemProps>[], widgetId: number, {
 	widgets,
 	setWidgetTheme
 }: WidgetApi) => {

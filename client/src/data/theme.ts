@@ -47,3 +47,17 @@ export const getWidgetStylePropsFromTheme = (theme: Theme | undefined) => {
 export const getLoadingStylePropsFromTheme = (theme: Theme | undefined) => {
 	return getStylingFunctionFromTheme(theme)("loading")  as {style: React.CSSProperties};
 };
+
+export const ThemeOptions = [
+	["Default", undefined],
+	["Monokai", "monokai"],
+	["Ocean", "ocean"],
+	["Solarized", "solarized"],
+	["Mocha", "mocha"],
+	["Green", "greenscreen"],
+	["Light", "bright:inverted"]
+] as const;
+
+export const isDarkTheme = (theme: Theme | undefined): boolean => {
+	return theme !== undefined && theme !== "bright:inverted";
+}

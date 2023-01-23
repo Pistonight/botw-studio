@@ -1,7 +1,7 @@
 import { appendLog, canLog, LoggerLevel, LoggerSource } from "data/log";
 import produce from "immer";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ConsoleSession, DataSession, DefaultConnectionSessionName, DefaultConsoleSessionName, isConsoleSession, isDataSession, newConsoleSession, newDataSession, Session } from "store/type";
+import { useCallback, useMemo, useState } from "react";
+import { DefaultConnectionSessionName, DefaultConsoleSessionName, isConsoleSession, isDataSession, newConsoleSession, newDataSession, Session } from "store/type";
 
 const logHelper = (sessions: Record<string, Session>, level: LoggerLevel, source: LoggerSource, text: string) => {
 	for (const key in sessions) {
@@ -12,6 +12,19 @@ const logHelper = (sessions: Record<string, Session>, level: LoggerLevel, source
 			}
 		}
 	}
+}
+
+const checkSessionHelper = <T extends Session>(sessions: Record<string, Session>, sessionName: string, predicate: (session: Session) => session is T): T | undefined => {
+	if (!(sessionName in sessions)){ 
+		logHelper(sessions, "E", "client", `Error: Accessing "${sessionName}" which is not a Session`);
+		return undefined; 
+	}
+	const session = sessions[sessionName];
+	if (!predicate(session)) {
+		logHelper(sessions, "E", "client", `Error: Accessing "${sessionName}" which is the wrong Session type`);
+		return undefined;
+	}
+	return session;
 }
 
 export const canCloseSession = (sessionName: string) => {
@@ -26,6 +39,7 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 		nextDataSessionName
 	] = useMemo(()=>{
 		const sessionNames = Object.keys(sessionNameMap);
+		sessionNames.sort();
 		let i = 1;
 		while (sessionNames.includes(`Console ${i}`)){
 			i++;
@@ -69,8 +83,6 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 		}));
 	}, []);
 
-
-
 	const closeSession = useCallback((sessionName: string)=>{
 		if (!canCloseSession(sessionName)){
 			log("E", "client", `Error: Session "${sessionName}" is not allowed to be closed.`)
@@ -105,20 +117,32 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 
 	const editData = useCallback((sessionName: string, newData: Record<string, unknown>) => {
 		setSessionNameMap(produce(draft=>{
-			if (!(sessionName in draft)){
-				logHelper(draft, "E", "client", `Error: Editing "${sessionName}" which is not a Session`);
-				return;
+			const session = checkSessionHelper(draft, sessionName, isDataSession);
+			if (session){
+				logHelper(draft, "D", "client", `Setting ${sessionName} data = ${JSON.stringify(newData)}`);
+				session.obj = newData;
 			}
-			const session = draft[sessionName];
-			if (!isDataSession(session)) {
-				logHelper(draft, "E", "client", `Error: Editing "${sessionName}" which is not a Data Session`);
-				return;
-			}
-			logHelper(draft, "D", "client", `Setting ${sessionName} data = ${JSON.stringify(newData)}`);
-			session.obj = newData;
 		}));
+	}, []);
 
-		
+	const setConsoleLogLevel = useCallback((sessionName: string, level: LoggerLevel) => {
+		setSessionNameMap(produce(draft=>{
+			const session = checkSessionHelper(draft, sessionName, isConsoleSession);
+			if (session) {
+				logHelper(draft, "I", "client", `Setting ${sessionName} logging level to ${level}`);
+				session.level = level;
+			}
+		}));
+	}, []);
+
+	const setConsoleLogSource = useCallback((sessionName: string, source: LoggerSource, enable: boolean) => {
+		setSessionNameMap(produce(draft=>{
+			const session = checkSessionHelper(draft, sessionName, isConsoleSession);
+			if (session) {
+				logHelper(draft, "I", "client", `Setting ${sessionName} to log ${source}: ${enable}`);
+				session.enabled[source] = enable;
+			}
+		}));
 	}, []);
 
 	return useMemo(()=>({
@@ -131,7 +155,9 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 		closeAllSessions,
 		editData,
 		nextConsoleSessionName,
-		nextDataSessionName
+		nextDataSessionName,
+		setConsoleLogLevel,
+		setConsoleLogSource
 	}), [
 		sessionNameMap,
 		sessionNames,
@@ -142,7 +168,9 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 		closeAllSessions,
 		editData,
 		nextConsoleSessionName,
-		nextDataSessionName
+		nextDataSessionName,
+		setConsoleLogLevel,
+		setConsoleLogSource
 	]);
 };
 

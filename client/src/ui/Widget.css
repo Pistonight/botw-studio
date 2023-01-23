@@ -11,3 +11,11 @@
 .widget-content.console-session {
     overflow-y: hidden;
 }
+
+.dark-color {
+    color-scheme: dark;
+}
+
+.light-color {
+    color-scheme: light;
+}

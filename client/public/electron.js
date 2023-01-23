@@ -5,8 +5,6 @@ const isDev = require('electron-is-dev');
 
 const { WebSocketServer } = require('ws');
 
-
-
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({

@@ -44,6 +44,9 @@ type AppGlobalApi = {
     closeAllSessions:() => void,
     // Edit Data
     editData: (sessionName: string, newData: Record<string, unknown>) => void,
+    // Edit Console
+    setConsoleLogLevel: (sessionName: string, level: LoggerLevel) => void,
+    setConsoleLogSource: (sessionName: string, source: LoggerSource, enable: boolean) => void,
 
     // Widget data for rendering
     widgets: Widget[],
