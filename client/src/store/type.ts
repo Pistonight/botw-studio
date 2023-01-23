@@ -24,22 +24,31 @@ export type ConsoleSession = Session & {
 
 export const isConsoleSession = (session: Session): session is ConsoleSession => session && session.uidx === ConsoleUidx;
 
-export const newConsoleSession = () => {
-    return {
-        uidx: ConsoleUidx,
-        data: "testeatsetasetaetaet",
-        level: "I",
-        enabled: {
-            "client": true,
-            "switch": true,
-            "server": true
-        }
-    } as ConsoleSession;
-}
+export const newConsoleSession = (): ConsoleSession => {
+	return {
+		uidx: ConsoleUidx,
+		data: "Welcome to botw-gametools Client. Right click on a Widget or on empty space to see options\n",
+		level: "I",
+		enabled: {
+			"client": true,
+			"switch": true,
+			"server": true
+		}
+	};
+};
 
 export type DataSession = Session & {
     // Data object
     obj: Record<string, unknown>
+}
+
+export const isDataSession = (session: Session): session is DataSession => session && session.uidx !== ConsoleUidx;
+
+export const newDataSession = (): DataSession => {
+    return {
+        uidx: -1,
+        obj: {}
+    };
 }
 
 export type ConnectionDataSession = DataSession & {
@@ -51,17 +60,16 @@ export type ConnectionDataSession = DataSession & {
     }
 }
 
-
-export const newConnectionDataSession = () => {
-    return {
-        uidx: ConnectionUidx,
-        obj: {
-            "SwitchHost": "192.168.0.0",
-            "SwitchPort": 65433,
-            "Connected": false
-        }
-    } as ConnectionDataSession;
-}
+export const newConnectionDataSession = (): ConnectionDataSession => {
+	return {
+		uidx: ConnectionUidx,
+		obj: {
+			"SwitchHost": "192.168.0.0",
+			"SwitchPort": 65433,
+			"Connected": false
+		}
+	};
+};
 
 // A Widget is a panel in the UI.
 
@@ -69,7 +77,7 @@ export type WidgetView = { x: number, y: number, w: number, h: number };
 
 export type Widget = {
     // Theme of the widget
-    theme: Theme,
+    theme: Theme | undefined,
     // Layout of the widget
     layout: WidgetView,
     // The session it's connected to

@@ -1,0 +1,1 @@
+export const Separator = () => <hr style={{marginTop: 3, marginBottom: 3}}/>

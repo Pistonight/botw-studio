@@ -9,11 +9,6 @@ declare namespace NodeJS {
   }
 }
 
-declare module "contextmenu" {
-  const useContextMenu: () => [any, (config: any)=>()=>void]
-  export default useContextMenu; 
-}
-
 declare module '*.avif' {
   const src: string;
   export default src;

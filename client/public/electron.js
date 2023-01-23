@@ -18,7 +18,7 @@ function createWindow() {
     icon: "favicon.ico"
   });
 
-  win.removeMenu();
+  
 
   // and load the index.html of the app.
   win.loadURL(
@@ -29,6 +29,8 @@ function createWindow() {
   // Open the DevTools.
   if (isDev) {
     win.webContents.openDevTools({ mode: 'detach' });
+  }else{
+    win.removeMenu();
   }
 }
 
