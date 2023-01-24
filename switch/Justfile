@@ -1,28 +1,32 @@
 set dotenv-load
 
-ld:
-    mkdir -p build
-    python tools/gen_syms_ld.py src build/syms.ld
+# Init .env
+initenv:
+    echo "VERSION=150" > .env
+    echo "FTP_CONSOLE_IP=" >> .env
+    echo "FTP_CONSOLE_PORT=5000" >> .env
+    echo "BOTW_LOCAL=" >> .env
 
-build:
-    mkdir -p build
-    python tools/build_wrapper.py
-    objdump -T build/botw-gametools.elf > build/botw-gametools.syms
-    python tools/check_elf.py build/botw-gametools.syms 1.5.0
-    python tools/check_elf.py build/botw-gametools.syms 1.6.0
+# Build the module. See tools/build_wrapper.py for flags
+build *FLAGS:
+    mkdir -p build_$VERSION
+    python tools/build_wrapper.py $VERSION {{FLAGS}}
 
-relink:
-    rm -f build/*.elf build/*.nso
-    @just ld
-    @just build
-
+# Deploy binary to switch
 deploy:
-    python tools/ftp-cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
-    STOR build/botw-gametools.nso atmosphere/contents/01007EF00011E000/exefs/subsdk9 \
-    STOR build/botw-gametools.npdm atmosphere/contents/01007EF00011E000/exefs/main.npdm
+    python tools/ftp_cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
+    STOR build_$VERSION/botw-gametools.nso atmosphere/contents/01007EF00011E000/exefs/subsdk9 \
+    STOR build_$VERSION/botw-gametools.npdm atmosphere/contents/01007EF00011E000/exefs/main.npdm
 
+# Remove binary on switch
+remove:
+    python tools/ftp_cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
+    STOR atmosphere/contents/01007EF00011E000/exefs/subsdk9 \
+    STOR atmosphere/contents/01007EF00011E000/exefs/main.npdm
+
+# Swap exefs/romfs with exefs-alt and romfs-alt on switch
 change-version:
-    python tools/ftp-cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
+    python tools/ftp_cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
     RNME atmosphere/contents/01007EF00011E000/exefs atmosphere/contents/01007EF00011E000/exefs-alt-2 \
     RNME atmosphere/contents/01007EF00011E000/romfs atmosphere/contents/01007EF00011E000/romfs-alt-2 \
     RNME atmosphere/contents/01007EF00011E000/exefs-alt atmosphere/contents/01007EF00011E000/exefs \
@@ -30,12 +34,12 @@ change-version:
     RNME atmosphere/contents/01007EF00011E000/exefs-alt-2 atmosphere/contents/01007EF00011E000/exefs-alt \
     RNME atmosphere/contents/01007EF00011E000/romfs-alt-2 atmosphere/contents/01007EF00011E000/romfs-alt
 
+# Get crash reports
 report:
-    python tools/ftp-cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
+    python tools/ftp_cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
     RTTR atmosphere/crash_reports crash_reports \
     RMD atmosphere/crash_reports
 
-something:
-    
+# Remove build directory
 clean:
-    rm -rf build
+    rm -rf build build_150 build_160

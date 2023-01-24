@@ -2,5 +2,7 @@ __pycache__
 venv
 .python-version
 build/
+build_150/
+build_160/
 .env
 crash_reports/

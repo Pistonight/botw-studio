@@ -1,5 +1,9 @@
 # Makefile for the main nso and npdm
 
+ifeq ($(strip $(BOTW_VERSION)),)
+$(error "BOTW_VERSION is not set. Please run the makefile through the wrapper with `just build 150` or `just build 160`")
+endif
+
 ifeq ($(strip $(DEVKITPRO)),)
 $(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/devkitpro")
 endif
@@ -70,7 +74,7 @@ INCLUDE	:=	\
 $(foreach dir,$(ALL_INCLUDE_DIRS),-I$(CURDIR)/$(dir)) \
 $(foreach dir,$(LIBDIRS),-I$(dir)/include)
 # Defines
-DEFINES := -D__SWITCH__ -DSWITCH -DNNSDK -DEXL_LOAD_KIND=Module -DEXL_LOAD_KIND_ENUM=2 -DEXL_PROGRAM_ID=0x$(PROGRAM_ID)
+DEFINES := -D__SWITCH__ -DSWITCH -DNNSDK -DEXL_LOAD_KIND=Module -DEXL_LOAD_KIND_ENUM=2 -DEXL_PROGRAM_ID=0x$(PROGRAM_ID) -D__BOTW_$(BOTW_VERSION)__
 # Architecture
 ARCH	:= -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec
 # C flags
@@ -91,10 +95,13 @@ DEPSDIR	    ?= .
 #---------------------------------------------------------------------------------
 # Make Targets
 .PHONY:	all
-all: $(TARGET).nso $(TARGET).npdm
+all: $(TARGET).nso $(TARGET).npdm $(TARGET).syms
+
+$(TARGET).syms: $(TARGET).elf
+	objdump -T $^ > $@
 
 # Make target ELF depend on all .o files
-$(TARGET).elf   : $(OFILES) $(SWITCH_SPECS)
+$(TARGET).elf: $(OFILES) $(SWITCH_SPECS)
 
 # Not sure why the default npdm rule fails. Redefining the rule here.
 # The tool prints error message for missing fields in json. They are not important so we ignore the errors

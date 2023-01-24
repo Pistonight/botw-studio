@@ -1,0 +1,17 @@
+
+# Linker Config
+#
+# This file contains symbols and their relative address in the botw main module
+# "base" is the absolute address of the main module
+# "manual" and "auto" are used to generate linker script
+# "auto" are the ones found by the build tool from the symbol listing
+# "unused" are not used to generate linker script
+
+
+base: 0x3483000
+
+auto:
+
+manual:
+
+unused:
