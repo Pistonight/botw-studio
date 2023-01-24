@@ -1,0 +1,34 @@
+title: BotW Game Tools
+description: A multi-purpose tool for inspecting the game, glitch hunting and speedrunning practice
+theme: just-the-docs
+favicon_ico: "favicon.ico"
+
+url: https://botw-gt.itntpiston.app
+
+aux_links:
+  Project on GitHub: https://github.com/iTNTPiston/botw-gametools
+
+heading_anchors: true
+
+callouts:
+  warning:
+    title: Warning
+    color: red
+  note:
+    title: Note
+    color: yellow
+
+color_scheme: dark
+
+exclude:
+  - Justfile
+#   - .sass-cache/
+#   - .jekyll-cache/
+#   - gemfiles/
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules/
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
