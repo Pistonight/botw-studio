@@ -19,7 +19,9 @@
                 "__aarch64__",
                 "EXL_LOAD_KIND=Module",
                 "EXL_LOAD_KIND_ENUM=2",
-                "EXL_AS_MODULE"
+                "EXL_AS_MODULE",
+                "__BOTW_150__",
+                "__BOTW_160__"
             ],
             "compilerPath": "/opt/devkitpro/devkitA64/bin/aarch64-none-elf-gcc",
             "cStandard": "c11",
