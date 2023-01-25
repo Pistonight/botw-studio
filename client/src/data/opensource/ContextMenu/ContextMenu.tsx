@@ -69,7 +69,8 @@ const getSubmenuStyles = (element: HTMLDivElement): [React.CSSProperties, boolea
 	}
 
 	if (height + y > innerHeight + scrollY) {
-		style.top = innerHeight + scrollY - height - y - 3;
+		style.top = "unset";
+		style.bottom = 0;
 		needsUpdate = true;
 	}
 	return [style, needsUpdate];
@@ -337,7 +338,7 @@ export function useContextMenu<RendererProps = Record<string, never>>(settings?:
 		if (!path){
 			return null;
 		}
-		return (
+		return ReactDOM.createPortal((
 			<div ref={menuRef} className="menu" style={displayLocation}>
 				{
 					menuData.map((item, i) => (
@@ -355,10 +356,10 @@ export function useContextMenu<RendererProps = Record<string, never>>(settings?:
 					))
 				}
 			</div>
-		);
+		), document.body);
 	}, [path, menuData, submenus, menuRef, displayLocation, combinedSettings, setPath])
 
-	return [ReactDOM.createPortal(menuComponent, document.body), contextMenuHandler] as const;
+	return [menuComponent, contextMenuHandler] as const;
 }
 
 

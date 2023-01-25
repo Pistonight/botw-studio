@@ -16,21 +16,21 @@ import { WidgetViewer } from "ui/Widget";
 
 function App() {
 
-	useEffect(()=>{
-		const ws = new WebSocket("ws://localhost:8001");
-		ws.onmessage = async (e) => {
-			const blob = e.data as Blob;
-			const buffer = new Uint8Array(await blob.arrayBuffer());
-			console.log(buffer);
-		};
+	// useEffect(()=>{
+	// 	const ws = new WebSocket("ws://localhost:8001");
+	// 	ws.onmessage = async (e) => {
+	// 		const blob = e.data as Blob;
+	// 		const buffer = new Uint8Array(await blob.arrayBuffer());
+	// 		console.log(buffer);
+	// 	};
         
-		ws.onopen = (e) => {
-			const buffer = new Uint8Array([12,34,56,78]);
-			ws.send(buffer);
-		}
+	// 	ws.onopen = (e) => {
+	// 		const buffer = new Uint8Array([12,34,56,78]);
+	// 		ws.send(buffer);
+	// 	}
         
-		window["DebugWebSocket" as any] = ws as any;
-	}, []);
+	// 	window["DebugWebSocket" as any] = ws as any;
+	// }, []);
 
 	const [mainHeight, setMainHeight] = useState<number>(window.innerHeight-1);
 	const [mainWidth, setMainWidth] = useState<number>(window.innerWidth-1);

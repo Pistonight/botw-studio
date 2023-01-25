@@ -25,12 +25,12 @@ app.whenReady().then(()=>{
 		width: 800,
 		height: 600,
 		webPreferences: {
-		nodeIntegration: true,
+			nodeIntegration: true,
 		},
 	});
 
 	// Load the client
-	win.loadURL(localhostUrl(clientPort));
+	win.loadURL(`${localhostUrl(clientPort)}?wsport=${webSocketPort}`);
 
 	if (isDev) {
 		win.webContents.openDevTools({ mode: 'detach' });

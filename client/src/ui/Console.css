@@ -7,3 +7,13 @@ textarea.console {
     color: inherit;
     border: none;
 }
+
+div.console-container {
+    position: relative;
+    height: 100%;
+}
+
+div.console-callout {
+    position: absolute;
+    bottom: 0
+}

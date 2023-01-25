@@ -1,6 +1,6 @@
 import { useContextMenu, MenuData } from "data/opensource";
 import { ThemeOptions } from "data/theme";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { isConsoleSession, Widget } from "store/type";
 import { LayoutApi } from "../layout";
 import { canCloseSession, SessionApi } from "../session";
@@ -249,24 +249,14 @@ export const useMenuApi = (sessionApi: SessionApi, widgetApi: WidgetApi, layoutA
 
 
     const openMenu = useCallback((widgetId: number | undefined, event: React.MouseEvent) => {
-        const menuConfig: MenuData<MenuItemProps>[] = [
-			["Refresh", () => console.log(), "", {}],
-			["Deactivate", () => console.log(), "", {}],
-			"separator",// ,
-			
-
-			
-
-
-			
-			
-		];
-
 		createHandler(createMenu(widgetId, sessionApi, widgetApi, layoutApi))(event);
     }, [createHandler, sessionApi, widgetApi, layoutApi]);
 
-	return {
+	return useMemo(()=>({
 		menu,
 		openMenu
-	}
+	}), [
+		menu,
+		openMenu
+	]);
 };

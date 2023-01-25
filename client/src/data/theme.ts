@@ -27,6 +27,10 @@ const getWidgetDivStyleFromBase16Theme = (theme: Base16Theme) => {
 			backgroundColor: theme.base00,
 			color: theme.base07
 		},
+		callout: {
+			backgroundColor: theme.base09,
+			color: theme.base00
+		},
 		loading: {
 			color: theme.base09
 		}
@@ -40,12 +44,20 @@ const getStylingFunctionFromTheme = (theme: Theme | undefined) => {
 	return createStyling(getWidgetDivStyleFromBase16Theme, { defaultBase16: DefaultTheme })(theme);
 };
 
+type Style = {
+	style: React.CSSProperties
+}
+
 export const getWidgetStylePropsFromTheme = (theme: Theme | undefined) => {
-	return getStylingFunctionFromTheme(theme)("basic") as {style: React.CSSProperties};
+	return getStylingFunctionFromTheme(theme)("basic") as Style;
+};
+
+export const getCalloutStylePropsFromTheme = (theme: Theme | undefined) => {
+	return getStylingFunctionFromTheme(theme)("callout") as Style;
 };
 
 export const getLoadingStylePropsFromTheme = (theme: Theme | undefined) => {
-	return getStylingFunctionFromTheme(theme)("loading")  as {style: React.CSSProperties};
+	return getStylingFunctionFromTheme(theme)("loading") as Style;
 };
 
 export const ThemeOptions = [

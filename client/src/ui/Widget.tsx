@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { Console } from "./Console";
 import "./Widget.css";
 import { DataViewer } from "./DataViewer";
+import React from "react";
 
 export type WidgetProps = {
     widgetId: number
@@ -29,7 +30,7 @@ export const WidgetViewer: React.FC<WidgetProps> = ({widgetId}) => {
 	if (!session) {
 		content = <Loading theme={theme} />;
 	} else if (isConsoleSession(session)) {
-		content = <Console content={session.data} paused={false} />;
+		content = <Console content={session.data} theme={theme} />;
 		sessionClass = "console-session";
 	} else if (isDataSession(session)) {
 		content = <DataViewer data={session.obj} theme={theme} rootName={sessionName} setData={setData} />;

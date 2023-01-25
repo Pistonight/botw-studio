@@ -1,9 +1,11 @@
-import React, { PropsWithChildren, useCallback, useContext, useMemo, useState } from "react";
+import React, { PropsWithChildren, ReactPortal, useCallback, useContext, useMemo, useState } from "react";
 import { Layout } from "react-grid-layout";
 import { canLog, appendLog, LoggerLevel, LoggerSource, LoggerSourceEnableMap, LogFunction } from "data/log";
 import produce from "immer";
 import { useLayoutApi, useMenuApi, useSessionApi, useWidgetApi } from "./api";
 import { DefaultConnectionSessionName, DefaultConsoleSessionName, newConnectionDataSession, newConsoleSession, Session, Widget } from "./type";
+import { Packet } from "data/server";
+import { useServerApi } from "./api/server";
 
 const getDefaultSessions = () => ({
 	[DefaultConsoleSessionName]: newConsoleSession(),
@@ -67,9 +69,12 @@ type AppGlobalApi = {
     setLayouts: (layouts: Layout[]) => void
 
     // The menu
-    menu: JSX.Element,
+    menu: ReactPortal | null,
     // Open Context Menu on a widget or in empty space
     openMenu: (widgetId: number | undefined, event: React.MouseEvent) => void
+
+    // Interaction with server
+    sendPacket: (p: Packet) => void
 
 }
 
@@ -80,13 +85,15 @@ export const AppGlobal: React.FC = ({children}) => {
 	const widgetApi = useWidgetApi(sessionApi, getDefaultWidgets);
 	const layoutApi = useLayoutApi(widgetApi, sessionApi);
     const menuApi = useMenuApi(sessionApi, widgetApi, layoutApi);
+    const serverApi = useServerApi(sessionApi);
 
 	return (
 		<AppGlobalApiContext.Provider value={{
 			...sessionApi,
 			...widgetApi,
 			...layoutApi,
-            ...menuApi
+            ...menuApi,
+            ...serverApi
 
 		}}>
 			{children}
