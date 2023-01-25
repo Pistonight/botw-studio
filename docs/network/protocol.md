@@ -18,11 +18,21 @@ O = Opcode
 M = Rest of the message
 ```
 
+## Unexpected/Unknown Packets
+Some packets are expected to be received by both the Switch and the Client, while others are only expected by one side. 
+
+- If the Switch receives an unexpect packet, or a packet with an unknown opcode, it will simply ignore it for better network performance.
+- If the Client receives one, it will log an error message.
+
+For the packets below, if the behavior is not listed for a side, it's not expected to be received by that side.
+
 ## Opcodes
 The Opcode of a Packet defines what the request is.
 
 {: .note }
 If a Packet will be ignored when received on the Switch, the Server will not send it
+
+---
 
 ### `0xXX00` Message Request
 Sending raw messages. 
@@ -40,8 +50,9 @@ The rest of the message is an ascii-encoded string.
 All strings received by the Switch are ascii-encoded. However, the Client uses UTF-8 strings. If the character is not ascii, it will be replaced by `?`
 
 #### Behavior
-- Received by Switch: Ignored
-- Received by Client: Log in console
+- Client: Log in console
+
+---
 
 ### `0x0001` Activate Module Request
 Activate a new instance of a module and creates a session.
@@ -64,49 +75,92 @@ A = Module-specific arguments
 - Received by Switch:
   - Create a new session with the module and respond with `0x0101` Activate Module Response with the same serial ID and the new session ID.
   - If the Switch is at its maximum number of opened sessions. A `0x0300` Error Message will be sent instead
-- Received by Client: Unexpected
 
-{: .note }
-If the Client receives an unexpected message, the default behavior is logging it as a warning in the console
+---
 
+### `0x0101` Activate Module Response
+This message is sent by the Switch as a reponse to Activate Module Request. It contains the session id that is opened and the same serial id sent with the request.
 
+#### Arguments
+```
+S B
+S = Serial ID. 1 byte. Same as the one in the Request
+B = Session ID. 1 byte
+```
 
-Opcode 0101: Activate Module Response
-Fields: serial (1 byte), session id (1 byte)
-Received by Switch: Ignore
-Received by Client: connect the session id to output widget, etc
+#### Behavior
+- Received by Client:
+  - Opens a Widget that connects to the module output and caches the returned session ID
 
-Opcode 0003: Deactivate Module Request/Response
-Fields: session id (1 byte)
-Received by Switch: close up the module but not free the session yet
-Received by Client: clean up session and send free session request
+---
 
-Opcode 0103: Free Session Request
-Fields: session id (1 byte)
-Received by Switch: free the session slot
-Received by Client: Log Error
+### `0x0002` Deactivate Module Request/Response
+Request to deactivate the module.
 
-Opcode 0203: Get Module Data Request
-Fields: session id (1 byte)
-Received by Switch: Pack the data and send back
-Received by Client: Log Error
+Client sends this request to the Switch to close a session and deactivate a module. The Switch will deactivate the session but not free it so it doesn't allocate a new session before the Client can clean it up.
 
-Opcode 1203: Module Data
-Fields: session id (1 byte), module data pack
-Received by Switch: Ignore
-Received by Client: Update view
+`0xXX02` opcodes all have session id as the first argument.
 
-Opcode 2203: Execute Command Request
-Fields: session_id (1 byte), command data pack
-Received by Switch: execute the command
-Received by Client: Log Error
+#### Arguments
+```
+S
+S = Session ID
+```
 
-Opcode 0004: Heartbeat
-Received by Switch: send heartbeat back
-Received by Client: ignore
+#### Behavior
+- Received by Switch: Deactivate the session, and send `0x0002` Deactivate Module Request back to the Client with same session ID
+- Received by Client: Close resources used by the session, and sends `0x0102` Free Session Request to finally delete the session
 
+### `0x0102` Free Session Request
+Request to free a Session, so the slot can be used by another Session later.
 
-Opcode 00FF: Disconnect Request/Response
-Fields: none
-Received by Switch: Closes all sessions and disconnect
-Received by Client: Closes all sessions and widgets
+If the Session to be freed is not deactivated, it's automatically deactivated.
+
+#### Arguments
+```
+S
+S = Session ID
+```
+#### Behavior
+- Received by Switch: free the session, deactivate the module if needed
+
+---
+
+### `0x0202` Get Data Request
+This request is used to get data from a module.
+
+#### Arguments
+```
+S AAAAAAAA ....
+S = Session ID
+A = Module-specific data. Maybe empty
+```
+
+#### Behavior
+- Received by Switch:
+  - Returns `0x1202` Module Data for valid sessions
+  - For invalid sessions, return `0x0300` Error Message
+
+---
+
+### `0x1202` Module Data
+The packed data of a module
+
+#### Arguments
+```
+S MMMMMMM ...
+S = Session ID
+M = Module-specific data
+```
+
+#### Behavior
+- Received by Client: Display the data in the corresponding output Widget
+
+---
+
+### `0x00FF` Disconnect Request
+This request is sent to the Switch to disconnect the Client.
+
+No response is sent. The Client will automatically disconnect when the connection is lost.
+
+No arguments is needed for this opcode. The switch will close all sessions and modules before closing the connection, and no new sessions can be made.

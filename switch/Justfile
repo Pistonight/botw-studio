@@ -42,4 +42,4 @@ report:
 
 # Remove build directory
 clean:
-    rm -rf build build_150 build_160
+    rm -rf build build_150 build_160 .env crash_reports

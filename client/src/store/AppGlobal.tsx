@@ -74,7 +74,7 @@ type AppGlobalApi = {
 }
 
 const AppGlobalApiContext = React.createContext<AppGlobalApi>({} as unknown as AppGlobalApi);
-export const AppGlobal: React.FC<PropsWithChildren> = ({children}) => {
+export const AppGlobal: React.FC = ({children}) => {
 
 	const sessionApi = useSessionApi(getDefaultSessions);
 	const widgetApi = useWidgetApi(sessionApi, getDefaultWidgets);

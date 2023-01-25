@@ -1,2 +1,5 @@
 start:
-  bundle exec jekyll serve -d ../_site
+    bundle exec jekyll serve -d ../_site
+
+clean:
+    rm -rf ../_site .sass-cache

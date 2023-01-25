@@ -1,0 +1,13 @@
+start:
+    npm run build && npm run electron
+
+# win32, linux or darwin
+package platform arch="x64":
+    rm -rf build client
+    npm run build
+    cd ../client && npm run build
+    cp -r ../client/build ./client
+    npx electron-packager . botw-gametools --platform={{platform}} --arch={{arch}} --ignore '\.tsbuildinfo$' --ignore '\.ts$' --overwrite --out target
+
+clean:
+    rm -rf client build node_modules target
