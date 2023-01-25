@@ -22,9 +22,6 @@ color_scheme: dark
 
 exclude:
   - Justfile
-  - client/
-  - switch/
-  - .vscode/
 #   - .sass-cache/
 #   - .jekyll-cache/
 #   - gemfiles/
