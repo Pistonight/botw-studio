@@ -4,13 +4,13 @@ import { Theme } from "react-base16-styling";
 // A Session is a connection between the Client and a running module on the Switch
 export type Session = {
     // The unique index of the session. Used to identify the session on the Switch.
-    // -1 if not connected to the Switch, -2 for console, -3 for connection settings
+    // -1 if not connected to the Switch, -2 for console, -3 for connection settings, -4 for output data
     uidx: number,
 }
 
 const ConsoleUidx = -2 as const;
-
 const ConnectionUidx = -3 as const;
+const OutputUidx = -4 as const;
 
 export type ConsoleSession = Session & {
     uidx: typeof ConsoleUidx,
@@ -43,12 +43,19 @@ export type DataSession = Session & {
 }
 
 export const isDataSession = (session: Session): session is DataSession => session && session.uidx !== ConsoleUidx;
-
+export const isOutputSession = (session: Session): boolean => session && session.uidx === OutputUidx;
 export const newDataSession = (): DataSession => {
     return {
         uidx: -1,
         obj: {}
     };
+}
+
+export const newOutputSession = (): DataSession => {
+    return {
+        uidx: OutputUidx,
+        obj: {}
+    }
 }
 
 export type ConnectionDataSession = DataSession & {
@@ -83,15 +90,5 @@ export type Widget = {
     // The session it's connected to
     sessionName: string,
 }
-
-export type GlobalContext = {
-    // Mapping from session name to session data
-    sessions: Record<string, Session>,
-    // Mapping from session uidx to session name
-    openSessions: string[],
-    // Displayed widgets
-    widgets: Widget[],
-}
-
 export const DefaultConsoleSessionName = "Console 1";
 export const DefaultConnectionSessionName = "Connection";

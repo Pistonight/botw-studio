@@ -1,12 +1,15 @@
 import { app, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import { parseArgs, serveClient, openWebSocketServer } from "./boot";
+import { readSettingToURIString } from "./setting";
 import { localhostUrl } from "./util";
 
 const {
 	clientPort,
 	webSocketPort
 } = parseArgs(process.argv);
+
+console.log(__dirname);
 
 const cleanupTasks: (()=>void)[] = [];
 
@@ -17,6 +20,9 @@ if (!isDev) {
 
 // Open WebSocket Server
 cleanupTasks.push(openWebSocketServer(webSocketPort));
+
+// Read settings
+const settings = readSettingToURIString();
 
 // Initialize Electron App
 app.whenReady().then(()=>{
@@ -29,8 +35,13 @@ app.whenReady().then(()=>{
 		},
 	});
 
+	let url = `${localhostUrl(clientPort)}?wsport=${webSocketPort}`;
+	if (settings) {
+		url += `&settings=${settings}`;
+	}
+
 	// Load the client
-	win.loadURL(`${localhostUrl(clientPort)}?wsport=${webSocketPort}`);
+	win.loadURL(url);
 
 	if (isDev) {
 		win.webContents.openDevTools({ mode: 'detach' });

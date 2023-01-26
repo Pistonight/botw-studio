@@ -1,7 +1,7 @@
 import { appendLog, canLog, LoggerLevel, LoggerSource } from "data/log";
 import produce from "immer";
 import { useCallback, useMemo, useState } from "react";
-import { DefaultConnectionSessionName, DefaultConsoleSessionName, isConsoleSession, isDataSession, newConsoleSession, newDataSession, Session } from "store/type";
+import { DefaultConnectionSessionName, DefaultConsoleSessionName, isConsoleSession, isDataSession, newConsoleSession, newDataSession, newOutputSession, Session } from "store/type";
 
 const logHelper = (sessions: Record<string, Session>, level: LoggerLevel, source: LoggerSource, text: string) => {
 	for (const key in sessions) {
@@ -27,17 +27,15 @@ const checkSessionHelper = <T extends Session>(sessions: Record<string, Session>
 	return session;
 }
 
-export const canCloseSession = (sessionName: string) => {
-	return sessionName !== DefaultConsoleSessionName && sessionName !== DefaultConnectionSessionName;
-};
-
 export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) => {
 	const [sessionNameMap, setSessionNameMap] = useState<Record<string, Session>>(getDefaultSessions);
-	const [
+	const [activeOutputSessionMap, setActiveOutputSessionMap] = useState<Record<number, string>>({});
+	const {
 		sessionNames,
+		activeOutputSessionNames,
 		nextConsoleSessionName,
 		nextDataSessionName
-	] = useMemo(()=>{
+	} = useMemo(()=>{
 		const sessionNames = Object.keys(sessionNameMap);
 		sessionNames.sort();
 		let i = 1;
@@ -50,11 +48,14 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 			i++;
 		}
 		const nextDataSessionName = `Data ${i}`;
-		return [
+		const activeOutputSessionNames = Object.values(activeOutputSessionMap);
+		activeOutputSessionNames.sort();
+		return {
 			sessionNames,
+			activeOutputSessionNames,
 			nextConsoleSessionName,
 			nextDataSessionName
-		]
+		};
 	}, [sessionNameMap]);
 
 	const log = useCallback((level: LoggerLevel, source: LoggerSource, text: string) => {
@@ -83,6 +84,21 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 		}));
 	}, []);
 
+	const createOutputSession = useCallback((name: string)=>{
+		setSessionNameMap(produce((draft)=>{
+			logHelper(draft, "I", "client", `Creating new Output Session "${name}"`);
+			draft[name] = newOutputSession();
+		}));
+	}, []);
+
+	const canCloseSession = useCallback((sessionName: string) => {
+		if(sessionName === DefaultConsoleSessionName || sessionName === DefaultConnectionSessionName){
+			return false;
+		}
+		// Cannot close activate output sessions
+		return !activeOutputSessionNames.includes(sessionName);
+	}, [activeOutputSessionNames]);
+
 	const closeSession = useCallback((sessionName: string)=>{
 		if (!canCloseSession(sessionName)){
 			log("E", "client", `Error: Session "${sessionName}" is not allowed to be closed.`)
@@ -96,7 +112,7 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 			delete draft[sessionName];
 		}));
 		
-	}, []);
+	}, [canCloseSession]);
 
 	const closeAllSessions = useCallback(() => {
 		setSessionNameMap(produce((draft)=>{
@@ -113,7 +129,7 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 			}
 			
 		}));
-	}, []);
+	}, [canCloseSession]);
 
 	const editData = useCallback((sessionName: string, newData: Record<string, unknown>) => {
 		setSessionNameMap(produce(draft=>{
@@ -145,12 +161,16 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 		}));
 	}, []);
 
+
 	return useMemo(()=>({
 		sessions: sessionNameMap,
 		sessionNames,
+		activeOutputSessionNames,
 		log,
 		createConsoleSession,
 		createDataSession,
+		createOutputSession,
+		canCloseSession,
 		closeSession,
 		closeAllSessions,
 		editData,
@@ -161,9 +181,12 @@ export const useSessionApi = (getDefaultSessions: ()=>Record<string, Session>) =
 	}), [
 		sessionNameMap,
 		sessionNames,
+		activeOutputSessionNames,
 		log,
 		createConsoleSession,
 		createDataSession,
+		createOutputSession,
+		canCloseSession,
 		closeSession,
 		closeAllSessions,
 		editData,

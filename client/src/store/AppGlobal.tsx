@@ -6,6 +6,7 @@ import { useLayoutApi, useMenuApi, useSessionApi, useWidgetApi } from "./api";
 import { DefaultConnectionSessionName, DefaultConsoleSessionName, newConnectionDataSession, newConsoleSession, Session, Widget } from "./type";
 import { Packet } from "data/server";
 import { useServerApi } from "./api/server";
+import { usePersistSetting } from "./api/setting";
 
 const getDefaultSessions = () => ({
 	[DefaultConsoleSessionName]: newConsoleSession(),
@@ -31,6 +32,8 @@ type AppGlobalApi = {
     sessionNames: string[],
     // List of sessions
     sessions: Record<string, Session>,
+    // Active output sessions
+    activeOutputSessionNames: string[],
     // Next available names
     nextConsoleSessionName: string,
     nextDataSessionName: string,
@@ -40,6 +43,8 @@ type AppGlobalApi = {
     createConsoleSession: (name: string) => void,
     // Open a JSON session. Returns session name
     createDataSession: (name: string) => void,
+    // Can a session be closed.
+    canCloseSession: (sessionName: string) => boolean,
     // Close a session and associated widgets
     closeSession: (sessionName: string) => void,
     // Close all sessions and widgets, and open default sessions
@@ -80,12 +85,13 @@ type AppGlobalApi = {
 
 const AppGlobalApiContext = React.createContext<AppGlobalApi>({} as unknown as AppGlobalApi);
 export const AppGlobal: React.FC = ({children}) => {
-
 	const sessionApi = useSessionApi(getDefaultSessions);
 	const widgetApi = useWidgetApi(sessionApi, getDefaultWidgets);
 	const layoutApi = useLayoutApi(widgetApi, sessionApi);
     const menuApi = useMenuApi(sessionApi, widgetApi, layoutApi);
     const serverApi = useServerApi(sessionApi);
+
+    usePersistSetting(sessionApi, widgetApi, serverApi);
 
 	return (
 		<AppGlobalApiContext.Provider value={{

@@ -8,3 +8,13 @@
 .loading-spinner-container > svg {
     flex: 1 1 auto;
 }
+
+div.loading-container {
+    position: relative;
+    height: 100%;
+}
+
+div.loading-callout {
+    position: absolute;
+    bottom: 0
+}

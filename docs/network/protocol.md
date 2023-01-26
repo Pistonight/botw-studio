@@ -9,14 +9,17 @@ parent: Network
 # Protocol
 This is the protocol used for transimitting data in the application.
 
-## Packet
-Each request is packaged into a variable-size Packet with the following layout. Each letter represents a byte
+## Switch-Server Packet
+Each request is packaged into a variable-size Packet with the following layout. Each letter represents a byte. All multi-byte numeric fields are little endian
 ```
 LL OO MMMMMMM ...
 L = Length of the packet, in bytes
 O = Opcode
 M = Rest of the message
 ```
+
+## Client-Server Packet
+The packets sent between client and server are the same as Switch-Server packets, except it does not have the 2-byte length field. Since we are using the WebSocket protocol, it's ok to send data without specifying length ourselves.
 
 ## Unexpected/Unknown Packets
 Some packets are expected to be received by both the Switch and the Client, while others are only expected by one side. 
@@ -42,6 +45,10 @@ Sending raw messages.
 - `0x0100` Info Message
 - `0x0200` Warn Message
 - `0x0300` Error Message
+- `0x1000` Switch Debug Message
+- `0x1100` Switch Info Message
+- `0x1200` Switch Warn Message
+- `0x1300` Switch Error Message
 
 #### Arguments
 The rest of the message is an ascii-encoded string.
@@ -74,7 +81,7 @@ A = Module-specific arguments
 #### Behavior
 - Received by Switch:
   - Create a new session with the module and respond with `0x0101` Activate Module Response with the same serial ID and the new session ID.
-  - If the Switch is at its maximum number of opened sessions. A `0x0300` Error Message will be sent instead
+  - If the Switch is at its maximum number of opened sessions. A `0x1300` Switch Error Message will be sent instead
 
 ---
 
@@ -139,7 +146,7 @@ A = Module-specific data. Maybe empty
 #### Behavior
 - Received by Switch:
   - Returns `0x1202` Module Data for valid sessions
-  - For invalid sessions, return `0x0300` Error Message
+  - For invalid sessions, return `0x1300` Switch Error Message
 
 ---
 
@@ -158,9 +165,22 @@ M = Module-specific data
 
 ---
 
-### `0x00FF` Disconnect Request
+### `0x0003` Disconnect Request
 This request is sent to the Switch to disconnect the Client.
 
 No response is sent. The Client will automatically disconnect when the connection is lost.
 
 No arguments is needed for this opcode. The switch will close all sessions and modules before closing the connection, and no new sessions can be made.
+
+## Client-Server Special Requests
+There are special requests that client sends to the server for additional functionality
+
+### `0x0014` Storage Request
+Client send this request to the server to persist settings.
+
+#### Arguments
+JJJJJJJJJ ...
+J = Null-terminated, URI-encoded JSON string
+
+#### Behavior
+Received by Server: Persist the JSON object

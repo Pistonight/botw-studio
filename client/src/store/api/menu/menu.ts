@@ -3,7 +3,7 @@ import { ThemeOptions } from "data/theme";
 import { useCallback, useMemo } from "react";
 import { isConsoleSession, Widget } from "store/type";
 import { LayoutApi } from "../layout";
-import { canCloseSession, SessionApi } from "../session";
+import { SessionApi } from "../session";
 import { WidgetApi } from "../widget";
 import { MenuItem, MenuItemProps } from "./MenuItem";
 import { Separator } from "./Separator";
@@ -103,6 +103,7 @@ const addSessionMenuOptions = (menu: MenuData<MenuItemProps>[], widgetId: number
 	nextConsoleSessionName,
 	nextDataSessionName,
 	closeSession,
+	canCloseSession,
 }: SessionApi, {
 	widgets,
 	setWidgetSession,

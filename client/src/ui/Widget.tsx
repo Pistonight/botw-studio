@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { Base16Theme, Theme } from "react-base16-styling";
 import { useGlobal } from "store/AppGlobal";
-import { isConsoleSession, isDataSession, Session, Widget } from "store/type";
+import { isConsoleSession, isDataSession, isOutputSession, Session, Widget } from "store/type";
 import { Loading } from "./Loading";
 import { getWidgetStylePropsFromTheme, isDarkTheme } from "../data/theme";
 import clsx from "clsx";
@@ -15,7 +15,7 @@ export type WidgetProps = {
 };
 
 export const WidgetViewer: React.FC<WidgetProps> = ({widgetId}) => {
-	const { sessions, widgets, editData, openMenu } = useGlobal();
+	const { sessions, widgets, editData, openMenu, activeOutputSessionNames } = useGlobal();
 	const widget = widgets[widgetId];
 	const { theme, sessionName } = widget;
 
@@ -28,15 +28,28 @@ export const WidgetViewer: React.FC<WidgetProps> = ({widgetId}) => {
 	let content: JSX.Element;
 	let sessionClass = "";
 	if (!session) {
-		content = <Loading theme={theme} />;
+		content = <Loading theme={theme} title={sessionName+"(Invalid Session)"}/>;
 	} else if (isConsoleSession(session)) {
 		content = <Console content={session.data} theme={theme} />;
 		sessionClass = "console-session";
 	} else if (isDataSession(session)) {
-		content = <DataViewer data={session.obj} theme={theme} rootName={sessionName} setData={setData} />;
-		sessionClass = "data-session";
+		if(isOutputSession(session) && !activeOutputSessionNames.includes(sessionName)){
+			content = <Loading theme={theme} title={sessionName}/>;
+		}else{
+			content = (
+				<DataViewer
+					data={session.obj}
+					theme={theme}
+					rootName={sessionName}
+					isReadonly={isOutputSession(session)}
+					setData={setData}
+				/>
+			);
+			sessionClass = "data-session";
+		}
+		
 	} else {
-		content = <Loading theme={theme} />;
+		content = <Loading theme={theme} title={sessionName+"(Unknown Session Type)"}/>;
 	}
 	const styleProps = useMemo(()=>getWidgetStylePropsFromTheme(theme), [theme]);
 

@@ -5,6 +5,7 @@ import ReactJson, { InteractionProps } from "react-json-view";
 export type DataViewerProps = {
     data: Record<string, unknown>,
     setData: (newData: Record<string, unknown>) => void,
+	isReadonly: boolean,
     rootName: string,
     theme?: Theme
 }
@@ -13,6 +14,7 @@ export const DataViewer: React.FC<DataViewerProps> = ({
 	data,
 	rootName,
 	theme,
+	isReadonly,
 	setData
 }) => {
 
@@ -22,11 +24,16 @@ export const DataViewer: React.FC<DataViewerProps> = ({
 
 	return (
 		<ReactJson
+			iconStyle="square"
 			style={{width: "100%"}}
+			quotesOnKeys={false}
+			displayObjectSize={isReadonly} // Only display object size for output
+			displayDataTypes={!isReadonly} // Only display type for input
 			src={data}
 			name={rootName}
 			theme={theme as any}
-			onEdit={updateFunction}
+			onEdit={!isReadonly && updateFunction}
+			onDelete={!isReadonly && updateFunction}
 		/>
 	);
 };

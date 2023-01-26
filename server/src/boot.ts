@@ -2,6 +2,7 @@ import http from "http";
 import path from "path";
 import handler from "serve-handler";
 import { WebSocketServer } from "ws";
+import { infoMessage, debugMessage, onReceiveFromClient } from "./data";
 
 import { localhostUrl } from "./util";
 
@@ -51,11 +52,9 @@ export const openWebSocketServer = (port: number) : (()=>void) => {
         ws.on('message', function message(data) {
             //console.log('received: %s', data);
             const buffer = new Uint8Array(data as Buffer);
-            console.log(buffer);
-            ws.send(buffer);
+            ws.send(debugMessage("Message received."))
+            onReceiveFromClient(buffer);
         });
-
-
     
     });
 
