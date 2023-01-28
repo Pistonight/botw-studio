@@ -5,7 +5,7 @@ namespace sead {
 class TextWriter;
 }
 
-namespace botwgametools::screen {
+namespace uking::studio::screen {
 
 
 void Init();

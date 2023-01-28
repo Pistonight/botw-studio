@@ -227,7 +227,7 @@ class SymbolDiffer:
             self.is_loaded = True
 
         input_symbols = set()
-        self.read_symbols_from(f"build_{self.version}/botw-gametools.syms", input_symbols)
+        self.read_symbols_from(f"build_{self.version}/botw-studio.syms", input_symbols)
         return input_symbols - self.dll_symbols
 
     def read_symbols_from(self, symbol_file, output):
@@ -500,9 +500,9 @@ class Build:
     def prepare_relink(self):
         self.print_step("Prepare Relink")
         files = [
-            f"build_{self.version}/botw-gametools.nso",
-            f"build_{self.version}/botw-gametools.elf",
-            f"build_{self.version}/botw-gametools.syms",
+            f"build_{self.version}/botw-studio.nso",
+            f"build_{self.version}/botw-studio.elf",
+            f"build_{self.version}/botw-studio.syms",
         ]
         for file in files:
             if os.path.exists(file):

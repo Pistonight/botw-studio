@@ -39,7 +39,7 @@ export const newConsoleSession = (name: string): ConsoleSession => {
 	return {
         name,
 		uidx: ConsoleUidx,
-		data: "Welcome to botw-gametools Client. Right click on a Widget or on empty space to see options\n",
+		data: "Welcome to Botw Studio. Right click on a Widget or on empty space to see options\n",
 		level: "I",
 		enabled: {
 			"client": true,

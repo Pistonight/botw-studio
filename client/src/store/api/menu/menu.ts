@@ -359,7 +359,7 @@ const addGlobalMenuOptions = (menu: MenuData<MenuItemProps>[], widgetId: number 
 		// [
 		// 	"Connect to Switch",
 		// 	undefined,
-		// 	"Connect to the game running botw-gametools server",
+		// 	"Connect to the game running botw studio server",
 		// 	{}
 		// ],
 

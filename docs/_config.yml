@@ -1,12 +1,12 @@
-title: BotW Game Tools
+title: BotW Studio
 description: A multi-purpose tool for inspecting the game, glitch hunting and speedrunning practice
 theme: just-the-docs
 favicon_ico: "favicon.ico"
 
-url: https://botw-gametools.itntpiston.app
+url: https://botw-studio.itntpiston.app
 
 aux_links:
-  Project on GitHub: https://github.com/iTNTPiston/botw-gametools
+  Project on GitHub: https://github.com/iTNTPiston/botw-studio
 
 heading_anchors: true
 

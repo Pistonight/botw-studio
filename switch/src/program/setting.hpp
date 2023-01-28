@@ -2,8 +2,8 @@
 
 #include "common.hpp"
 
-#define EXL_MODULE_NAME "botw-gametools"
-#define EXL_MODULE_NAME_LEN 14
+#define EXL_MODULE_NAME "botw-studio"
+#define EXL_MODULE_NAME_LEN 11
 
 #define EXL_DEBUG
 

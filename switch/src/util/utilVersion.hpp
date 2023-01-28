@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-namespace botwgametools::util {
+namespace uking::studio::util {
 
 u32 GetRuntimeVersionHash();
 char* GetRuntimeVersion();

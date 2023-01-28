@@ -14,7 +14,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 # Variables
 
 # Target name
-TARGET          := botw-gametools
+TARGET          := botw-studio
 PROGRAM_ID		:= 01007ef00011e000
 
 # DIRECTORIES

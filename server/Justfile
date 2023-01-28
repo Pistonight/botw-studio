@@ -7,7 +7,7 @@ package platform arch="x64":
     npm run build
     cd ../client && npm run build
     cp -r ../client/build ./client
-    npx electron-packager . botw-gametools --platform={{platform}} --arch={{arch}} --ignore '\.tsbuildinfo$' --ignore '\.ts$' --overwrite --out target
+    npx electron-packager . botw-studio --platform={{platform}} --arch={{arch}} --ignore '\.tsbuildinfo$' --ignore '\.ts$' --overwrite --out target
 
 clean:
     rm -rf client build node_modules target

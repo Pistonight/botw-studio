@@ -37,7 +37,7 @@ export const WidgetViewer: React.FC<WidgetProps> = ({widgetId}) => {
 		if(isOutputSession(session) && !activeOutputSessionIds.includes(sessionId)){
 			content = <Loading theme={theme} title={session.name}/>;
 		}else if (sessionId === HelpSessionId){
-			content = <Browser url="https://botw-gametools.itntpiston.app" theme={theme} widgetId={widgetId}/>;
+			content = <Browser url="https://botw-studio.itntpiston.app" theme={theme} widgetId={widgetId}/>;
 		}else{
 			content = (
 				<DataViewer

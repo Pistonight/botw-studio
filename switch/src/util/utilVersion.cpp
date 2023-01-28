@@ -2,7 +2,7 @@
 #include <nn/oe.h>
 #include "utilVersion.hpp"
 
-namespace botwgametools::util {
+namespace uking::studio::util {
 
 static char s_versionStringCache[16] = "";
 char* GetRuntimeVersion() {
