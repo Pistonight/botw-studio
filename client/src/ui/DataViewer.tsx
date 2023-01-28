@@ -33,6 +33,7 @@ export const DataViewer: React.FC<DataViewerProps> = ({
 			name={rootName}
 			theme={theme as any}
 			onEdit={!isReadonly && updateFunction}
+			onAdd={!isReadonly && updateFunction}
 			onDelete={!isReadonly && updateFunction}
 		/>
 	);

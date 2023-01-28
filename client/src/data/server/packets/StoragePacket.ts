@@ -3,11 +3,17 @@ import { AppApi, Opcodes, Packet, PacketWriter } from "../type";
 
 export type PersistStorage = {
     consoles: Record<string, {
+        name: string,
         level: LoggerLevel,
         enabled: LoggerSourceEnableMap
     }>,
-    datas: Record<string, Record<string, unknown>>,
-    outputs: string[],
+    datas: Record<string, {
+        name: string,
+        obj: Record<string, unknown>
+    }>,
+    outputs: Record<string, {
+        name: string
+    }>,
     widgets: {
         theme: string|undefined,
         x: number,
@@ -31,5 +37,6 @@ export class PersistStoragePacket implements Packet {
     public pack(w: PacketWriter) {
         w.writeInt16(Opcodes.StorageRequest);
         w.writeUri(this.data);
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-import { AppApi, pack, Packet, unpack } from "data/server";
+import { AppApi, FreeSessionPacket, pack, Packet, unpack } from "data/server";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { SessionApi } from "./session";
 import QueryString from "query-string";
@@ -14,25 +14,42 @@ type Stub = ReturnType<typeof createStub>;
 const isStub = (ws: WebSocket|Stub): ws is Stub => "isStub" in ws;
 
 export const useServerApi = ({
-    log
+    log,
+    activateOutput,
+    deactivateOutput,
+    updateOutput
 }: SessionApi) => {
     const [serverReady, setReady] = useState<boolean>(false);
     const [ws, setWebSocket] = useState<WebSocket|Stub>(createStub);
-
-    const appApi: AppApi = useMemo(()=>({
-        log
-    }), [
-        log
-    ]);
 
     const sendPacket = useCallback((packet: Packet) => {
         if(isStub(ws)){
             log("E", "client", "Cannot send packet: WebSocket not ready");
             return;
         }
-        const data = pack(packet);
+        const data = pack(packet, log);
+        if(!data){
+            log("E", "client", "Packet validation failed!");
+            return;
+        }
         ws.send(data);
     }, [ws, log]);
+
+    const appApi: AppApi = useMemo(()=>({
+        log,
+        activateOutput,
+        deactivateOutput: (remoteSessionId: number) => {
+            deactivateOutput(remoteSessionId);
+            log("I", "client", `Freeing remote session ${remoteSessionId}...`)
+            sendPacket(new FreeSessionPacket(remoteSessionId));
+        },
+        updateOutput
+    }), [
+        log,
+        activateOutput,
+        deactivateOutput,
+        updateOutput
+    ]);
 
     const onWsOpen = useCallback(()=>{
         log("I", "client", "Internal server connected!");

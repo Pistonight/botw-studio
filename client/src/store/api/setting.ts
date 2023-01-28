@@ -1,6 +1,6 @@
 import { PersistStorage, PersistStoragePacket } from "data/server";
 import { useEffect, useMemo, useState } from "react";
-import { DefaultConnectionSessionName, DefaultConsoleSessionName, isConsoleSession, isDataSession, isOutputSession, newConnectionDataSession, newConsoleSession, Widget } from "store/type";
+import { ConnectionSessionId, HelpSessionId, isConsoleSession, isDataSession, isOutputSession, newConnectionDataSession, newConsoleSession, Widget } from "store/type";
 import { ServerApi } from "./server";
 import { SessionApi } from "./session";
 import { WidgetApi } from "./widget";
@@ -9,6 +9,7 @@ import QueryString from "query-string";
 export const usePersistSetting = ({
     sessions,
     log,
+    closeAllSessions,
     createConsoleSession,
     createDataSession,
     createOutputSession,
@@ -38,28 +39,42 @@ export const usePersistSetting = ({
                 const storage = JSON.parse(settingJSON) as PersistStorage;
 
                 const sourceNames = ["client", "switch", "server"] as const;
+                closeAllSessions();
+                const sessionIdRemap: Record<string, string> = {};
                 // Open sessions
-                for (const sessionName in storage.consoles) {
-                    createConsoleSession(sessionName);
-                    const sessionSetting = storage.consoles[sessionName];
-                    setConsoleLogLevel(sessionName, sessionSetting.level);
+                for (const sessionId in storage.consoles) {
+                    const session = storage.consoles[sessionId];
+                    const newId = createConsoleSession(session.name);
+                    sessionIdRemap[sessionId] = newId;
+                    
+                    setConsoleLogLevel(newId, session.level);
                     sourceNames.forEach(source=>{
-                        const enabled = !!sessionSetting.enabled[source];
-                        setConsoleLogSource(sessionName, source, enabled);
+                        const enabled = !!session.enabled[source];
+                        setConsoleLogSource(newId, source, enabled);
                     });
                 }
-                for (const sessionName in storage.datas) {
-                    createDataSession(sessionName);
-                    editData(sessionName, storage.datas[sessionName]);
+                for (const sessionId in storage.datas) {
+                    let newId = sessionId;
+                    const session = storage.datas[sessionId];
+                    if (sessionId !== ConnectionSessionId && sessionId !== HelpSessionId){
+                        newId = createDataSession(session.name);
+                    }
+                    sessionIdRemap[sessionId] = newId;
+                    editData(newId, session.obj);
                 }
-                storage.outputs.forEach(sessionName=>createOutputSession(sessionName));
+                for (const sessionId in storage.outputs) {
+                    const session = storage.outputs[sessionId];
+                    const newId = createOutputSession(session.name);
+                    sessionIdRemap[sessionId] = newId;
+                }
+
                 // Open Widgets
                 const widgets: Widget[] = [];
                 storage.widgets.forEach(({theme, x,y,w,h,session}) => {
                     widgets.push({
                         theme,
                         layout: { x,y,w,h },
-                        sessionName: session
+                        sessionId: sessionIdRemap[session]
                     });
                 });
                 setWidgets(widgets);
@@ -72,6 +87,7 @@ export const usePersistSetting = ({
     }, [
         settingLoaded,
         log,
+        closeAllSessions,
         createConsoleSession,
         setConsoleLogLevel,
         setConsoleLogSource,
@@ -85,31 +101,51 @@ export const usePersistSetting = ({
         const storage: PersistStorage = {
             consoles: {},
             datas: {},
-            outputs: [],
+            outputs: {},
             widgets: []
         }
 
-        for (const sessionName in sessions) {
-            const session = sessions[sessionName];
+        for (const sessionId in sessions) {
+            const session = sessions[sessionId];
             if (isConsoleSession(session)) {
-                storage.consoles[sessionName] = {
+                storage.consoles[sessionId] = {
+                    name: session.name,
                     level: session.level,
                     enabled: {...session.enabled}
                 };
             } else if (isDataSession(session)) {
                 if (isOutputSession(session)) {
-                    storage.outputs.push(sessionName);
+                    storage.outputs[sessionId] = {
+                        name: session.name
+                    };
                 }else{
-                    storage.datas[sessionName]=session.obj;
+                    storage.datas[sessionId]={
+                        name: session.name,
+                        obj: session.obj
+                    };
                 }
             }
+        }
+
+        if (!(ConnectionSessionId in storage.datas)) {
+            const session = newConnectionDataSession();
+            storage.datas[ConnectionSessionId] = {
+                name: session.name,
+                obj: session.obj
+            };
+        }
+        if (!(HelpSessionId in storage.datas)) {
+            storage.datas[HelpSessionId] = {
+                name: "Help",
+                obj: {}
+            };
         }
 
         widgets.forEach(widget=>{
             storage.widgets.push({
                 theme: typeof widget.theme === "string" ? widget.theme : undefined,
                 ...widget.layout,
-                session: widget.sessionName
+                session: widget.sessionId
             });
         });
 

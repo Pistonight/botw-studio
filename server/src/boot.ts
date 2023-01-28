@@ -50,10 +50,9 @@ export const openWebSocketServer = (port: number) : (()=>void) => {
 
     wss.on('connection', function connection(ws) {
         ws.on('message', function message(data) {
-            //console.log('received: %s', data);
             const buffer = new Uint8Array(data as Buffer);
             ws.send(debugMessage("Message received."))
-            onReceiveFromClient(buffer);
+            onReceiveFromClient(buffer, ws);
         });
     
     });

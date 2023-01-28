@@ -1,5 +1,6 @@
-import { MessagePacket, MessagePacketUnpacker } from "./packets";
-import { Opcode, Packet, PacketReader, PacketWriter, Unpacker } from "./type";
+import { LogFunction } from "data/log";
+import { ActivateModuleResponseUnpacker, DeactivateModuleUnpacker, MessagePacket, MessagePacketUnpacker, ModuleDataUnpacker } from "./packets";
+import { Opcode, Opcodes, Packet, PacketReader, PacketWriter, Unpacker } from "./type";
 
 const cleanAscii = (code: number): number => {
     if (code == 0xA || (code >= 0x20 && code <= 0x7E)) {
@@ -128,13 +129,24 @@ class PacketReaderImpl implements PacketReader{
 
 }
 
-export const pack = (packet: Packet): ArrayBuffer => {
+export const pack = (packet: Packet, log: LogFunction): ArrayBuffer|undefined => {
     const writer = new PacketWriterImpl();
-    packet.pack(writer);
+    if(!packet.pack(writer, log)){
+        return undefined;
+    }
     return writer.done();
 }
 
+const createErrorPacket = (message: string): Packet => {
+    return new MessagePacket("client", "E", "IO Error: "+message);
+}
+
+const ErrorUnpacker: Unpacker = (opcode, reader) => {
+    return createErrorPacket(`Unexpected Opcode: 0x${opcode.toString(16)}`);
+}
+
 const UnpackerRegistry: Record<number, Unpacker> = {
+    // Message
     0x0000: MessagePacketUnpacker,
     0x0100: MessagePacketUnpacker,
     0x0200: MessagePacketUnpacker,
@@ -142,12 +154,21 @@ const UnpackerRegistry: Record<number, Unpacker> = {
     0x1000: MessagePacketUnpacker,
     0x1100: MessagePacketUnpacker,
     0x1200: MessagePacketUnpacker,
-    0x1300: MessagePacketUnpacker
+    0x1300: MessagePacketUnpacker,
+
+    // Module Request
+    [Opcodes.ActivateModule]: ErrorUnpacker,
+    [Opcodes.ActivateModuleResponse]: ActivateModuleResponseUnpacker,
+    [Opcodes.DeactivateModule]: DeactivateModuleUnpacker,
+    [Opcodes.FreeSession]: ErrorUnpacker,
+
+    [Opcodes.ModuleData]: ModuleDataUnpacker,
+
+    // Storage Request
+    [Opcodes.StorageRequest]: ErrorUnpacker,
 }
 
-const createErrorPacket = (message: string): Packet => {
-    return new MessagePacket("client", "E", "IO Error: "+message);
-}
+
 
 export const unpack = (buffer: Uint8Array): Packet => {
     const reader = new PacketReaderImpl(buffer.buffer);

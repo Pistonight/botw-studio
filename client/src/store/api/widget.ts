@@ -1,6 +1,6 @@
 import produce from "immer";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DefaultConsoleSessionName, Widget, WidgetView } from "store/type";
+import { isConsoleSession, Session, Widget, WidgetView } from "store/type";
 import { SessionApi } from "./session";
 
 const splitView = (view: WidgetView): [WidgetView, WidgetView] => {
@@ -22,49 +22,35 @@ const splitView = (view: WidgetView): [WidgetView, WidgetView] => {
 	];
 };
 
-
-
 export const useWidgetApi = ({
 	log,
-	sessionNames,
-}: SessionApi, getDefaultWidgets: ()=>Widget[]) => {
-	const [widgets, setWidgets] = useState<Widget[]>(getDefaultWidgets);
-	useEffect(() => {
-		if (widgets.length === 0) {
-			setWidgets([{
-				theme: undefined,
-				layout: { x: 0, y: 0, w: 32, h: 32 },
-				sessionName: DefaultConsoleSessionName
-			}]);
-			log("W", "client", "You have closed all Widgets. The default Console is opened automatically so you can keep using the app.");
-		}
-	}, [widgets, log])
+	sessions,
+}: SessionApi, defaultWidgets: Widget[]) => {
+	const [widgets, setWidgets] = useState<Widget[]>(defaultWidgets);
 
 	// Close widgets that are binded to expired sessions
 	useEffect(()=>{
-		
-		const names = new Set(sessionNames);
-		if (widgets.find(widget=>!names.has(widget.sessionName))){
-			setWidgets((prevWidgets)=>{
+		if (widgets.find(widget=>!(widget.sessionId in sessions))) {
+			setWidgets(prevWidgets=>{
 				return prevWidgets.filter((widget, i)=>{
-					if (names.has(widget.sessionName)){
+					if (widget.sessionId in sessions){
 						return true;
 					}
-					log("I", "client", `Closing Widget ${i} with expired Session "${widget.sessionName}"`);
+					log("I", "client", `Closing Widget ${i} with expired Session (id=${widget.sessionId})`);
 					return false;
 				});
-			})
+			});
 		}
-	}, [widgets, sessionNames, log]);
+	}, [widgets, sessions, log]);
 
-	const setWidgetSession = useCallback((widgetId: number, sessionName: string) => {
+	const setWidgetSession = useCallback((widgetId: number, sessionId: string) => {
 		setWidgets(produce(draft=>{
 			if(draft[widgetId] === undefined){
 				log("E", "client", `Cannot set session: invalid widget id ${widgetId}`);
 				return;
 			}
-			log("I", "client", `Binding Widget ${widgetId} to Session "${sessionName}"`);
-			draft[widgetId].sessionName = sessionName;
+			log("I", "client", `Binding Widget ${widgetId} to Session (id=${sessionId})"`);
+			draft[widgetId].sessionId = sessionId;
 		}));
 	}, [log]);
 
@@ -79,7 +65,7 @@ export const useWidgetApi = ({
 		}));
 	}, [log]);
 
-	const splitWidget = useCallback((widgetId: number, sessionName: string) => {
+	const splitWidget = useCallback((widgetId: number, sessionId: string) => {
 		setWidgets(produce(draft=>{
 			if(draft[widgetId] === undefined){
 				log("E", "client", `Cannot split widget: invalid widget id ${widgetId}`);
@@ -89,7 +75,7 @@ export const useWidgetApi = ({
 			const newWidget = {
 				theme: draft[widgetId].theme,
 				layout: newLayout2,
-				sessionName,
+				sessionId,
 			};
 			draft[widgetId].layout = newLayout1;
 			draft.push(newWidget);

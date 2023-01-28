@@ -1,4 +1,5 @@
 import { saveSettingFromURIString } from "./setting";
+import { WebSocket } from "ws";
 
 const cleanAscii = (code: number): number => {
     if (code == 0xA || (code >= 0x20 && code <= 0x7E)) {
@@ -52,10 +53,49 @@ export enum DataAction {
     Handled = 2
 }
 
-export const onReceiveFromClient = (data: Uint8Array): DataAction => {
+export const startFakeModule = (remoteSessionId: number, ws: WebSocket) => {
+    let stopped = false;
+    const update = () => {
+        if(!stopped){
+            const buffer = new ArrayBuffer(6);
+            const returnView = new DataView(buffer);
+            returnView.setInt16(0, 0x1202, true /* littleEndian */);
+            returnView.setInt8(2, remoteSessionId);
+            returnView.setInt16(3, 1 /* module id */, true /* littleEndian */);
+            returnView.setInt8(5, Math.floor(Math.random() * 100));
+            ws.send(buffer);
+            setTimeout(update, 1000);
+        }
+    };
+    setTimeout(update, 1000);
+    const stop = () => {
+        stopped = true;
+    };
+    return stop;
+}
+
+let stopFakeModule: (()=>void) | undefined = undefined;
+
+export const onReceiveFromClient = (data: Uint8Array, ws: WebSocket): DataAction => {
     const view = new DataView(data.buffer);
     const opcode = view.getInt16(0, true /* littleEndian */);
     switch (opcode) {
+        case 0x0001 /* Activate Module Request MOCK */: {
+            const serial = view.getInt8(2);
+            const buffer = new ArrayBuffer(4);
+            const returnView = new DataView(buffer);
+            returnView.setInt16(0, 0x0101, true /* littleEndian */);
+            returnView.setInt8(2, serial);
+            returnView.setInt8(3, 12);
+            ws.send(buffer);
+            stopFakeModule = startFakeModule(12, ws);
+            return DataAction.Handled;
+        }
+        case 0x0002 /* Deactivate Module Request MOCK */: {
+            stopFakeModule && stopFakeModule();
+            ws.send(data);
+            return DataAction.Handled;
+        }
         case 0x0014 /* Storage Request */: {
             const bytes: number[] = [];
             let i = 0;

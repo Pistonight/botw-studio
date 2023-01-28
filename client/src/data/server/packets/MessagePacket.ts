@@ -28,7 +28,8 @@ export class MessagePacket implements Packet {
     public pack(w: PacketWriter) {
         const opcode = OpcodeMap[this.source] | OpcodeMap[this.level];
         w.writeInt16(opcode);
-        w.writeAscii(this.message)
+        w.writeAscii(this.message);
+        return true;
     }
 }
 

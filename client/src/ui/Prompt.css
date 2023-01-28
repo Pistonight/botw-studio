@@ -1,0 +1,24 @@
+.prompt-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.prompt-item {
+    width: 50%;
+    padding: 5px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+
+.prompt-item > input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.prompt-button {
+    margin-right: 10px;
+}

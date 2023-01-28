@@ -16,7 +16,6 @@ export const Loading: React.FC<LoadingProps> = ({title, theme}) => {
 	const {style: {color}} = styleProps;
 
 	return (
-		
 		<div className="loading-container">
 			<ThreeCircles
 			height="50"
@@ -29,7 +28,6 @@ export const Loading: React.FC<LoadingProps> = ({title, theme}) => {
 			innerCircleColor=""
 			middleCircleColor=""
 		/>
-			
            <div className="loading-callout" {...calloutStyleProps}>{title}</div>
 		</div>
 	);

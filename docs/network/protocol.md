@@ -155,9 +155,10 @@ The packed data of a module
 
 #### Arguments
 ```
-S MMMMMMM ...
+S MM DDDDD ...
 S = Session ID
-M = Module-specific data
+M = Module ID
+D = Module-specific data
 ```
 
 #### Behavior
@@ -179,8 +180,23 @@ There are special requests that client sends to the server for additional functi
 Client send this request to the server to persist settings.
 
 #### Arguments
+```
 JJJJJJJJJ ...
 J = Null-terminated, URI-encoded JSON string
+```
 
 #### Behavior
 Received by Server: Persist the JSON object
+
+### `0x0005` Connection Request/Response
+Request the internal Server to connect to the Switch
+
+#### Arguments
+```
+JJJJJJJJJ ...
+J = Null-terminated, URI-encoded JSON string with SwitchHost, SwitchPort and Connected
+```
+
+#### Behavior
+Received by Server: attempt to connect with the Switch if not already connected. Send response to client to update the connection data
+Received by Client: Update the connection data

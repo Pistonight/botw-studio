@@ -1,5 +1,5 @@
 import { getCalloutStylePropsFromTheme } from "data/theme";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Theme } from "react-base16-styling";
 import "./Console.css";
 export type ConsoleProps = {
@@ -8,13 +8,13 @@ export type ConsoleProps = {
 }
 export const Console: React.FC<ConsoleProps> = ({content, theme}) => {
 	const [pausedContent, setPausedContent] = useState<string|null>(null);
-	const textAreaRef = useRef<HTMLTextAreaElement>();
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
 	const displayContent = pausedContent ?? content;
 
 	const styleProps = useMemo(()=>getCalloutStylePropsFromTheme(theme), [theme]);
 
-	useEffect(() => {
+	useLayoutEffect(() => {
 		if (!pausedContent && textAreaRef && textAreaRef.current) {
 			const { scrollHeight, offsetHeight } = textAreaRef.current;
 			textAreaRef.current.scrollTop = scrollHeight - offsetHeight;
@@ -23,7 +23,8 @@ export const Console: React.FC<ConsoleProps> = ({content, theme}) => {
 
 	return (
 		<div className="console-container">
-			<textarea 
+			<textarea
+				ref={textAreaRef}
 				className="console"
 				value={displayContent}
 				readOnly 
@@ -44,7 +45,9 @@ export const Console: React.FC<ConsoleProps> = ({content, theme}) => {
 				}}
 			/>
 			
-           {pausedContent && <div className="console-callout" {...styleProps}>Scroll to bottom to unfreeze output</div>}
+			{pausedContent && <div className="console-callout" {...styleProps} onClick={()=>{
+				setPausedContent(null);
+			}}>Click here to unfreeze output</div>}
 		</div>
 	);
 };

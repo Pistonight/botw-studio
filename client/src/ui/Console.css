@@ -15,5 +15,6 @@ div.console-container {
 
 div.console-callout {
     position: absolute;
-    bottom: 0
+    bottom: 0;
+    cursor: pointer;
 }
