@@ -1,11 +1,12 @@
 #include <lib/patch/code_patcher.hpp>
 #include <util/utilMacros.hpp>
 #include <gfx/seadTextWriter.h>
+#include <server/svrServer.hpp>
 #include "screen.hpp"
 
 
 
-namespace uking::studio::screen {
+namespace uks::screen {
 
 namespace inst = exl::armv8::inst;
 namespace reg = exl::armv8::reg;
@@ -150,5 +151,6 @@ void Compute() {
 void Render(sead::TextWriter* pTextWriter) {
 
     pTextWriter->printf("botw-studio v0.0.0 on %s (%s-%08x)\n", VerString, util::GetRuntimeVersion(), util::GetRuntimeVersionHash());
+    pTextWriter->printf("  server status: %d\n", svr::GetSvrStatus());
 }
 }

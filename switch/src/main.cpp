@@ -1,11 +1,14 @@
 #include <lib.hpp>
-
+#include <module/modModuleId.hpp>
 #include <screen/screen.hpp>
+#include <server/svrServer.hpp>
 
-namespace uking::studio {
+namespace uks {
 
 void EntryPoint() {
     screen::Init();
+    mod::InitAllModules();
+    svr::RunServer();
 }
 
 }
@@ -16,6 +19,6 @@ extern "C" void exl_main(void* x0, void* x1) {
     exl::hook::Initialize();
 
     // Call application entry point
-    uking::studio::EntryPoint();
+    uks::EntryPoint();
 }
 

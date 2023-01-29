@@ -2,7 +2,7 @@
 
 #include <types.h>
 
-namespace uking::studio::util {
+namespace uks::util {
 
 u32 GetRuntimeVersionHash();
 char* GetRuntimeVersion();

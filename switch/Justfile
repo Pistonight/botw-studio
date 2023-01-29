@@ -1,4 +1,6 @@
 set dotenv-load
+default:
+    just --list
 
 # Init .env
 initenv:
@@ -12,12 +14,15 @@ build *FLAGS:
     mkdir -p build_$VERSION
     python tools/build_wrapper.py $VERSION {{FLAGS}}
 
+alias b:= build
+
 # Deploy binary to switch
 deploy:
     python tools/ftp_cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
     STOR build_$VERSION/botw-studio.nso atmosphere/contents/01007EF00011E000/exefs/subsdk9 \
     STOR build_$VERSION/botw-studio.npdm atmosphere/contents/01007EF00011E000/exefs/main.npdm
 
+alias i:= deploy
 # Remove binary on switch
 remove:
     python tools/ftp_cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
@@ -40,6 +45,8 @@ report:
     RTTR atmosphere/crash_reports crash_reports \
     RMD atmosphere/crash_reports
 
+alias t:= report
+
 # Remove build directory
 clean:
-    rm -rf build build_150 build_160 .env crash_reports
+    rm -rf build build_150 build_160

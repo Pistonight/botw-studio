@@ -2,7 +2,7 @@
 #include <nn/oe.h>
 #include "utilVersion.hpp"
 
-namespace uking::studio::util {
+namespace uks::util {
 
 static char s_versionStringCache[16] = "";
 char* GetRuntimeVersion() {

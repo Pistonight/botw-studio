@@ -71,6 +71,9 @@ UNLINKED_SYMBOLS_IGNORE = set([
     ".data",
     "__register_frame_info",
     "__deregister_frame_info",
+#      "_Z22envSetOwnProcessHandlej",
+#   "_Z14svcCloseHandlej",
+#   "_Z15svcGetProcessIdPmj"
 ])
 BOTW_PATH = "libs/botw"
 
@@ -146,7 +149,7 @@ class LinkerConfig:
             for mode in self.entries:
                 config_file.write("\n")
                 config_file.write(f"{mode}:\n")
-                for addr in self.entries[mode]:
+                for addr in sorted(self.entries[mode]):
                     comment = ""
                     if addr in self.addr_comments:
                         comment = self.addr_comments[addr]
@@ -162,6 +165,7 @@ class LinkerConfig:
         with open(filename, "w+", encoding="utf-8") as linker_script:
             linker_script.write(LINKER_SCRIPT_HEADER+"\n\n")
             if dry:
+                log(f"Written {count} entrie(s) to linker script")
                 return
             for mode in ["auto", "manual"]:
                 for addr in self.entries[mode]:
@@ -174,7 +178,9 @@ class LinkerConfig:
             log("Optimizing linker config")
             self.symbol_to_addr = {}
             
-            for mode in self.entries:
+            # not adding auto here, for autos to be resolved by
+            # scanning botw symbols
+            for mode in ["manual", "unused"]: 
                 for addr in self.entries[mode]:
                     self.symbol_to_addr[self.entries[mode][addr]] = addr
             # mark all manual entries as unused
@@ -323,7 +329,6 @@ class RenameTask:
     def __init__(self, old_name, new_name):
         self.old_name = old_name
         self.new_name = new_name
-        self.need_cleanup = False
 
     def execute(self):
         if os.path.exists(self.old_name):
@@ -334,6 +339,37 @@ class RenameTask:
         if os.path.exists(self.new_name):
             log(f"Renaming {self.new_name} to {self.old_name}")
             os.rename(self.new_name, self.old_name)
+
+class SuppressWarningTask:
+    def __init__(self, file_name, warnings, search_string):
+        self.file_name = file_name
+        self.file_name_old = f"{file_name}.old"
+        self.warnings = warnings
+        self.search_string = search_string
+        self.done = False
+    def execute(self):
+        if os.path.exists(self.file_name):
+            log(f"Renaming {self.file_name} to {self.file_name_old}")
+            os.rename(self.file_name, self.file_name_old)
+        with open(self.file_name, "w+", encoding="utf-8") as file:
+            with open(self.file_name_old, "r", encoding="utf-8") as file_old:
+                for line in file_old:
+                    if not self.done:
+                        if self.search_string in line:
+                            file.write("#pragma GCC diagnostic push\n")
+                            for warning in self.warnings:
+                                file.write(f"#pragma GCC diagnostic ignored \"{warning}\"\n")
+                            
+                            self.done = True
+                    file.write(line)
+            file.write("#pragma GCC diagnostic pop\n")
+    
+    def cleanup(self):
+        log(f"Restoring {self.file_name}")
+        if os.path.exists(self.file_name):
+            os.remove(self.file_name)
+        if os.path.exists(self.file_name_old):
+            os.rename(self.file_name_old, self.file_name)
 
 
 class Build:
@@ -353,7 +389,8 @@ class Build:
         self.stack = []
         self.tasks = [
             RenameTask("libs/exlaunch/source/program/main.cpp", "libs/exlaunch/source/program/main.cpp.old"),
-            RenameTask("libs/exlaunch/source/program/setting.hpp", "libs/exlaunch/source/program/setting.hpp.old")
+            RenameTask("libs/exlaunch/source/program/setting.hpp", "libs/exlaunch/source/program/setting.hpp.old"),
+            SuppressWarningTask("libs/botw/lib/sead/include/heap/seadDisposer.h", ["-Winvalid-offsetof"], "namespace sead"),
         ]
         self.current_step = 0
         self.error = ""

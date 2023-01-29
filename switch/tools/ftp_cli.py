@@ -218,8 +218,6 @@ class FtpWrapper:
         print(f"RNME {old_path} --> {new_path}")
         old_path = add_slash_if_need(old_path)
         new_path = add_slash_if_need(new_path)
-        self.ensure_parent(old_path)
-        self.ensure_parent(new_path)
         self.ftp.rename(old_path, new_path)
 
 def add_slash_if_need(path):

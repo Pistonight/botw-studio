@@ -1,11 +1,10 @@
 #pragma once
 
 namespace sead {
-/* [1.5.0][link-func] symbol=_ZN4sead10TextWriter6printfEPKcz, uking_name=sead::TextWriter::printf */
 class TextWriter;
 }
 
-namespace uking::studio::screen {
+namespace uks::screen {
 
 
 void Init();

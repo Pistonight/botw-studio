@@ -40,8 +40,10 @@ ALL_INCLUDE_DIRS	:=	\
 $(SOURCE_DIR) \
 $(EXLAUNCH_SRC) \
 $(EXLAUNCH_SRC)/lib \
-$(LIB_DIR)/nnheaders/include \
-$(LIB_DIR)/sead/include
+$(LIB_DIR)/botw/src \
+$(LIB_DIR)/botw/lib/NintendoSDK/include \
+$(LIB_DIR)/botw/lib/sead/include \
+
 
 # VPATH for make to search for files
 VPATH	:=	$(foreach dir,$(ALL_SOURCES_DIRS),$(CURDIR)/$(dir))
@@ -80,7 +82,7 @@ ARCH	:= -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec
 # C flags
 CFLAGS	:= -g -Wall -ffunction-sections -O3 $(ARCH) $(DEFINES) $(INCLUDE) 
 # CXX flags
-CXXFLAGS	:= $(CFLAGS) -fno-rtti -fomit-frame-pointer -fno-exceptions -fno-asynchronous-unwind-tables -fno-unwind-tables -enable-libstdcxx-allocator=new -fpermissive -std=gnu++2b
+CXXFLAGS	:= $(CFLAGS) -fno-rtti -fomit-frame-pointer -fno-exceptions -fno-asynchronous-unwind-tables -fno-unwind-tables -enable-libstdcxx-allocator=new -fpermissive -std=c++20
 # AS flags
 ASFLAGS	    := -g $(ARCH)
 # LD flags
