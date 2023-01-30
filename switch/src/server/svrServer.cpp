@@ -22,7 +22,6 @@ u32 GetSvrStatus() {
 }
 
 static nn::os::ThreadType sServerThread;
-//static char sSocketPool[SOCKET_POOL_SIZE];
 
 void ServerThread(void* _args) {
     Server server(PORT);
@@ -32,7 +31,6 @@ void ServerThread(void* _args) {
     }
 
     while(server.HandleClient()){
-        nn::os::YieldThread();
         server.ReleaseClient();
     }
 
@@ -124,14 +122,14 @@ bool Server::HandleClient() {
     sStatus = 7;
     mBufferLength = 0;
     mBufferOffset = 0;
-    nn::os::YieldThread();
+
     // Send hello
     GreetClient();
     sStatus = 8;
     Packet packet;
-    // while(ReadPacket(packet)) {
-    //     RecvPacket(packet);
-    // }
+    while(ReadPacket(packet)) {
+        RecvPacket(packet);
+    }
 
     return true;
 }

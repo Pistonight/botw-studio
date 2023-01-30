@@ -15,8 +15,8 @@ auto:
   0x00b18864: _ZN4sead15CriticalSectionC1Ev 
   0x00b1891c: _ZN4sead15CriticalSectionD1Ev 
   0x00b1898c: _ZN4sead15CriticalSection4lockEv 
+  0x00b1899c: _ZN4sead15CriticalSection6unlockEv 
   0x00b1f868: _ZN4sead10TextWriter6printfEPKcz 
-  0x02650608: _ZN4sead15CriticalSection6unlockEv 
 
 manual:
 

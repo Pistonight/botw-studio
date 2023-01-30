@@ -6,8 +6,13 @@
                 "${workspaceFolder}/switch/src",
                 "${workspaceFolder}/switch/libs/exlaunch/source",
                 "${workspaceFolder}/switch/libs/exlaunch/source/lib",
-                "${workspaceFolder}/switch/libs/nnheaders/include",
-                "${workspaceFolder}/switch/libs/sead/include",
+                "${workspaceFolder}/switch/libs/botw/lib/agl/include",
+                "${workspaceFolder}/switch/libs/botw/lib/EventFlow/include",
+                "${workspaceFolder}/switch/libs/botw/lib/gsys/include",
+                "${workspaceFolder}/switch/libs/botw/lib/NintendoSDK/include",
+                "${workspaceFolder}/switch/libs/botw/lib/sead/include",
+                "${workspaceFolder}/switch/libs/botw/lib/xlink2/include",
+                "${workspaceFolder}/switch/libs/botw/src",
                 "/opt/devkitpro/devkitA64/lib/gcc/aarch64-none-elf/12.2.0/include",
                 "/opt/devkitpro/devkitA64/aarch64-none-elf/include",
                 "/opt/devkitpro/libnx/include"
@@ -20,8 +25,7 @@
                 "EXL_LOAD_KIND=Module",
                 "EXL_LOAD_KIND_ENUM=2",
                 "EXL_AS_MODULE",
-                "__BOTW_150__",
-                "__BOTW_160__"
+                "BOTW_VERSION=150"
             ],
             "compilerPath": "/opt/devkitpro/devkitA64/bin/aarch64-none-elf-gcc",
             "cStandard": "c11",

@@ -2,6 +2,7 @@ import { app, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import { parseArgs, serveClient, openWebSocketServer } from "./boot";
 import { readSettingToURIString } from "./setting";
+import { connectToSwitch } from "./switch";
 import { localhostUrl } from "./util";
 
 const {
@@ -10,6 +11,7 @@ const {
 } = parseArgs(process.argv);
 
 console.log(__dirname);
+connectToSwitch("192.168.0.161", 64533);
 
 const cleanupTasks: (()=>void)[] = [];
 
