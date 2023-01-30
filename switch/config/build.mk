@@ -49,8 +49,6 @@ $(LIB_DIR)/botw/lib/sead/include \
 VPATH	:=	$(foreach dir,$(ALL_SOURCES_DIRS),$(CURDIR)/$(dir))
 
 # INPUT FILES
-# (Generated) Linker script for statically linking symbols.
-LDSCRIPT    := $(BUILD_DIR)/syms.ld
 # Linker version script
 LINKER_VERSION_SCRIPT := $(CONFIG_DIR)/version_script.txt
 # Source files 
@@ -76,7 +74,7 @@ INCLUDE	:=	\
 $(foreach dir,$(ALL_INCLUDE_DIRS),-I$(CURDIR)/$(dir)) \
 $(foreach dir,$(LIBDIRS),-I$(dir)/include)
 # Defines
-DEFINES := -D__SWITCH__ -DSWITCH -DNNSDK -DEXL_LOAD_KIND=Module -DEXL_LOAD_KIND_ENUM=2 -DEXL_PROGRAM_ID=0x$(PROGRAM_ID) -D__BOTW_$(BOTW_VERSION)__
+DEFINES := -D__SWITCH__ -DSWITCH -DNNSDK -DEXL_LOAD_KIND=Module -DEXL_LOAD_KIND_ENUM=2 -DEXL_PROGRAM_ID=0x$(PROGRAM_ID) -DBOTW_VERSION=$(BOTW_VERSION)
 # Architecture
 ARCH	:= -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec
 # C flags
@@ -97,10 +95,7 @@ DEPSDIR	    ?= .
 #---------------------------------------------------------------------------------
 # Make Targets
 .PHONY:	all
-all: $(TARGET).nso $(TARGET).npdm $(TARGET).syms
-
-$(TARGET).syms: $(TARGET).elf
-	objdump -T $^ > $@
+all: $(TARGET).nso $(TARGET).npdm
 
 # Make target ELF depend on all .o files
 $(TARGET).elf: $(OFILES) $(SWITCH_SPECS)

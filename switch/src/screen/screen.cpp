@@ -13,7 +13,7 @@ namespace reg = exl::armv8::reg;
 
 void Init() {
     // Patch Screen Rendering (150 only)
-#ifdef __BOTW_150__
+#if BOTW_VERSION == 150
     // (nnMain) Set debug heap to gfx heap
     exl::patch::CodePatcher patcher { 0x007d6238 };
     patcher.WriteInst(inst::MovRegister(reg::X22, reg::X21));

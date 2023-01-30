@@ -1,0 +1,33 @@
+# config file for botw-link.
+linker_config_dir = "config/linker"
+output = "config/linker/syms.ld"
+elf = "build/botw-studio.elf"
+nso = "build/studio.nso"
+make_args = ["-j8", "-C", "build", "-f", "../config/build.mk"]
+
+ignored_symbols = [
+    "exl_module_init",
+    "exl_exception_entry",
+    ".text",
+    ".data",
+    "__register_frame_info",
+    "__deregister_frame_info",
+]
+
+# Rename exlaunch template files so they are excluded from the build
+[[task.rename]]
+old = "libs/exlaunch/source/program/main.cpp"
+new = "libs/exlaunch/source/program/main.cpp.old"
+
+[[task.rename]]
+old = "libs/exlaunch/source/program/setting.hpp"
+new = "libs/exlaunch/source/program/setting.hpp.old"
+
+# Suppress warnings in sead
+[[task.suppress_warning]]
+file = "libs/botw/lib/sead/include/heap/seadDisposer.h"
+search = "namespace sead"
+suppress = [
+    "-Winvalid-offsetof"
+]
+

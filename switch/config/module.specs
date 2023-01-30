@@ -1,7 +1,7 @@
 %rename link                old_link
 
 *link:
-%(old_link) -T ../libs/exlaunch/misc/link.ld ./syms.ld --shared --export-dynamic --gc-sections --build-id=sha1 --nx-module-name -init=exl_module_init --exclude-libs=ALL
+%(old_link) -T ../libs/exlaunch/misc/link.ld ../config/linker/syms.ld --shared --export-dynamic --gc-sections --build-id=sha1 --nx-module-name -init=exl_module_init --exclude-libs=ALL
 
 *startfile:
 crti%O%s crtbegin%O%s

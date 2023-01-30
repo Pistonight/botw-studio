@@ -4,23 +4,21 @@ default:
 
 # Init .env
 initenv:
-    echo "VERSION=150" > .env
     echo "FTP_CONSOLE_IP=" >> .env
     echo "FTP_CONSOLE_PORT=5000" >> .env
-    echo "BOTW_LOCAL=" >> .env
 
 # Build the module. See tools/build_wrapper.py for flags
-build *FLAGS:
-    mkdir -p build_$VERSION
-    python tools/build_wrapper.py $VERSION {{FLAGS}}
+build VERSION *FLAGS:
+    mkdir -p build
+    python tools/botw-link config/build.toml -V {{VERSION}} {{FLAGS}}
 
 alias b:= build
 
 # Deploy binary to switch
 deploy:
     python tools/ftp_cli.py $FTP_CONSOLE_IP $FTP_CONSOLE_PORT \
-    STOR build_$VERSION/botw-studio.nso atmosphere/contents/01007EF00011E000/exefs/subsdk9 \
-    STOR build_$VERSION/botw-studio.npdm atmosphere/contents/01007EF00011E000/exefs/main.npdm
+    STOR build/botw-studio.nso atmosphere/contents/01007EF00011E000/exefs/subsdk9 \
+    STOR build/botw-studio.npdm atmosphere/contents/01007EF00011E000/exefs/main.npdm
 
 alias i:= deploy
 # Remove binary on switch
@@ -49,4 +47,4 @@ alias t:= report
 
 # Remove build directory
 clean:
-    rm -rf build build_150 build_160
+    rm -rf build tools/__pycache__

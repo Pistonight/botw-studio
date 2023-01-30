@@ -4,3 +4,6 @@
 [submodule "switch/libs/botw"]
 	path = switch/libs/botw
 	url = git@github.com:zeldaret/botw.git
+[submodule "switch/tools/botw-link"]
+	path = switch/tools/botw-link
+	url = git@github.com:iTNTPiston/botw-link
