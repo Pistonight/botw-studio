@@ -1,5 +1,6 @@
-#include <lib/patch/code_patcher.hpp>
-#include <util/utilMacros.hpp>
+#include <lib.hpp>
+#include <util/utilVersion.hpp>
+#include <module/modModuleCookSpy.hpp>
 #include <gfx/seadTextWriter.h>
 #include <server/svrServer.hpp>
 #include "screen.hpp"
@@ -30,7 +31,7 @@ void Init() {
     constexpr u32 Inst_FMOV_S9_MINUS_1_0 = 0x1E3E1009;
     constexpr u32 Inst_FADD_S10_S0_S9 = 0x1E29280A;
     constexpr u32 Inst_FADD_S12_S10_S8 = 0x1E28294C;
-    constexpr u32 Inst_STR_S12__SP_458_ = 0xBD045BEC;
+    constexpr u32 Inst_STR_S12__SP_458_ = 0xBD045BEC; // TODO: inst::StrRegisterImmediate(reg::S12, reg::SP, 0x458)
     constexpr u32 Inst_FMOV_S10_0 = 0x1E2703EA;
     constexpr u32 Inst_FMOV_S0_S11 = 0x1E204160;
     constexpr u32 Inst_FMOV_S12_S1 = 0x1E20402C;
@@ -38,7 +39,7 @@ void Init() {
     constexpr u32 Inst_FADD_S12_S1_S8 = 0x1E28282C;
     constexpr u32 Inst_FMOV_S11_S0 = 0x1E20400B;
     constexpr u32 Inst_FADD_S11_S11_S9 = 0x1E29296B;
-    constexpr u32 Inst_STR_S12__SP_45C_ = 0xBD045FEC;
+    constexpr u32 Inst_STR_S12__SP_45C_ = 0xBD045FEC; // TODO: inst::StrRegisterImmediate(reg::S12, reg::SP, 0x45C)
     constexpr u32 Inst_FMOV_S10_S11 = 0x1E20416A;
     constexpr u32 Inst_FADD_S11_S12_S9 = 0x1E29298B;
     constexpr u32 Inst_FADD_S0_S10_S8 = 0x1E282940;
@@ -148,9 +149,12 @@ void Init() {
 void Compute() {
 
 }
-void Render(sead::TextWriter* pTextWriter) {
+void Render(sead::TextWriter* p_text_writer) {
 
-    pTextWriter->printf("botw-studio v0.0.0 on %s (%s-%08x)\n", VerString, util::GetRuntimeVersion(), util::GetRuntimeVersionHash());
-    pTextWriter->printf("  server status: %d\n", svr::GetSvrStatus());
+    p_text_writer->printf("botw-studio (Bv%s Iv%s Rv%s)\n", util::GetTargetVersion(), util::GetInstalledVersion(), util::GetRuntimeVersion());
+    mod::CookSpyData& data = mod::GetCookSpyData();
+    p_text_writer->printf("  last rng roll: %d\n", data.mRngRoll);
+    p_text_writer->printf("  last crit chance: %d\n", data.mCritChance);
+    p_text_writer->printf("  last crit?: %s\n", data.mIsCrit ? "true" : "false");
 }
 }

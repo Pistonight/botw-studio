@@ -25,28 +25,28 @@ public:
     ListenerMgr() {}
     ~ListenerMgr() {
         sead::ScopedLock<sead::CriticalSection> lock(&mCriticalSection);
-        Listener<T>* pListener = mListeners.Pop();
-        while (pListener) {
-            pListener->mNext = nullptr;
-            pListener = mListeners.Pop();
+        Listener<T>* p_listener = mListeners.Pop();
+        while (p_listener) {
+            p_listener->mNext = nullptr;
+            p_listener = mListeners.Pop();
         }
     }
 
-    void AddListener(Listener<T>* pListener) {
+    void AddListener(Listener<T>* p_listener) {
         sead::ScopedLock<sead::CriticalSection> lock(&mCriticalSection);
-        mListeners.Push(pListener);
+        mListeners.Push(p_listener);
     }
-    void RemoveListener(Listener<T>* pListener) {
+    void RemoveListener(Listener<T>* p_listener) {
         sead::ScopedLock<sead::CriticalSection> lock(&mCriticalSection);
-        mListeners.Remove(pListener);
-        pListener->mNext = nullptr;
+        mListeners.Remove(p_listener);
+        p_listener->mNext = nullptr;
     }
     void Notify(T& t) {
         sead::ScopedLock<sead::CriticalSection> lock(&mCriticalSection);
-        Listener<T>* pListener = mListeners.GetFirst();
-        while (pListener) {
-            pListener->OnNotify(t);
-            pListener = pListener->mNext;
+        Listener<T>* p_listener = mListeners.GetFirst();
+        while (p_listener) {
+            p_listener->OnNotify(t);
+            p_listener = p_listener->mNext;
         }
     }
 

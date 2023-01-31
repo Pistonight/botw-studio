@@ -1,4 +1,5 @@
 #include <lib.hpp>
+#include <util/utilVersion.hpp>
 #include <module/modModuleId.hpp>
 #include <screen/screen.hpp>
 #include <server/svrServer.hpp>
@@ -8,7 +9,8 @@ namespace uks {
 void EntryPoint() {
     screen::Init();
     mod::InitAllModules();
-    svr::RunServer();
+    //svr::RunServer();
+    util::Init();
 }
 
 }

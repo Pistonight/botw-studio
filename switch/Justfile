@@ -7,6 +7,10 @@ initenv:
     echo "FTP_CONSOLE_IP=" >> .env
     echo "FTP_CONSOLE_PORT=5000" >> .env
 
+# Generate glue headers
+glue:
+    python tools/botw-link/glue.py uking ksys
+
 # Build the module. See tools/build_wrapper.py for flags
 build VERSION *FLAGS:
     mkdir -p build

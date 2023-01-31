@@ -6,3 +6,4 @@ build_150/
 build_160/
 .env
 crash_reports/
+syms.ld

@@ -13,6 +13,7 @@
                 "${workspaceFolder}/switch/libs/botw/lib/sead/include",
                 "${workspaceFolder}/switch/libs/botw/lib/xlink2/include",
                 "${workspaceFolder}/switch/libs/botw/src",
+                "${workspaceFolder}/switch/tools/botw-link/include",
                 "/opt/devkitpro/devkitA64/lib/gcc/aarch64-none-elf/12.2.0/include",
                 "/opt/devkitpro/devkitA64/aarch64-none-elf/include",
                 "/opt/devkitpro/libnx/include"
@@ -30,7 +31,7 @@
             "compilerPath": "/opt/devkitpro/devkitA64/bin/aarch64-none-elf-gcc",
             "cStandard": "c11",
             "cppStandard": "c++20",
-            "intelliSenseMode": "gcc-arm64"
+            "intelliSenseMode": "windows-gcc-arm64"
         }
     ],
     "version": 4

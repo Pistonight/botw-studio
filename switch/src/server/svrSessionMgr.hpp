@@ -29,9 +29,9 @@ public:
         return nullptr;
     }
 
-    void Free(T* pT) {
+    void Free(T* p_t) {
         for (u32 i = 0; i < L; i++) {
-            if (reinterpret_cast<T*>(&mSessions[i*sizeof(T)]) == pT) {
+            if (reinterpret_cast<T*>(&mSessions[i*sizeof(T)]) == p_t) {
                 mAllocated[i] = false;
                 return;
             }

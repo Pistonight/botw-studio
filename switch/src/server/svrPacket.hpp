@@ -99,10 +99,10 @@ public:
     bool WriteInt16At(u32 i, u16 value);
 
     // Return length of the string read excluding the null terminator
-    // max char to read is bufferLength, including the null terminator
+    // max char to read is buffer_length, including the null terminator
     // on error returns -1
-    s32 ReadAscii(char* buffer, u16 bufferLength) {
-        s32 length = ReadAsciiAt(mOffset, buffer, bufferLength);
+    s32 ReadAscii(char* buffer, u16 buffer_length) {
+        s32 length = ReadAsciiAt(mOffset, buffer, buffer_length);
         if(length < 0){
             return -1;
         }
@@ -110,15 +110,15 @@ public:
         return length;
     }
     
-    s32 ReadAsciiAt(u32 i, char* buffer, u32 bufferLength);
+    s32 ReadAsciiAt(u32 i, char* buffer, u32 buffer_length);
 
     // Write the null-terminated string at the given offset
-    // max char to write is bufferLength, excluding the null terminator
+    // max char to write is buffer_length, excluding the null terminator
     // return number of chars written excluding the null terminator
-    bool WriteAscii(const char* buffer, u32 bufferLength) {
+    bool WriteAscii(const char* buffer, u32 buffer_length) {
         // uncapped length
         mLength = MAX_PACKET_SIZE;
-        s32 length = WriteAsciiAt(mOffset, buffer, bufferLength);
+        s32 length = WriteAsciiAt(mOffset, buffer, buffer_length);
         if(length < 0){
             return false;
         }
@@ -127,7 +127,7 @@ public:
         return true;
     }
 
-    s32 WriteAsciiAt(u32 i, const char* buffer, u32 bufferLength);
+    s32 WriteAsciiAt(u32 i, const char* buffer, u32 buffer_length);
 
 private:
     u8 mBuffer[MAX_PACKET_SIZE];

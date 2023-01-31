@@ -23,7 +23,7 @@ new = "libs/exlaunch/source/program/main.cpp.old"
 old = "libs/exlaunch/source/program/setting.hpp"
 new = "libs/exlaunch/source/program/setting.hpp.old"
 
-# Suppress warnings in sead
+# Suppress warnings
 [[task.suppress_warning]]
 file = "libs/botw/lib/sead/include/heap/seadDisposer.h"
 search = "namespace sead"
@@ -31,3 +31,9 @@ suppress = [
     "-Winvalid-offsetof"
 ]
 
+[[task.suppress_warning]]
+file = "libs/botw/src/KingSystem/Resource/resHandle.h"
+search = "namespace sead"
+suppress = [
+    "-Winvalid-offsetof"
+]

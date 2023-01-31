@@ -167,19 +167,19 @@ bool Server::ReadPacketLength(u16* length){
     return true;
 }
 
-bool Server::ReadPacketData(u8* pData, u16 length){
+bool Server::ReadPacketData(u8* p_data, u16 length){
     // See if data is available in buffer
     if (mBufferOffset + length <= mBufferLength) {
-        memcpy(pData, mBuffer + mBufferOffset, length);
+        memcpy(p_data, mBuffer + mBufferOffset, length);
         mBufferOffset += length;
         return true;
     }
     // Read all data from buffer first
     if (mBufferOffset < mBufferLength) {
         u16 readFromBuffer = mBufferLength - mBufferOffset;
-        memcpy(pData, mBuffer + mBufferOffset, readFromBuffer);
+        memcpy(p_data, mBuffer + mBufferOffset, readFromBuffer);
         length -= readFromBuffer;
-        pData += readFromBuffer;
+        p_data += readFromBuffer;
         mBufferLength = 0;
         mBufferOffset = 0;
     }
@@ -192,14 +192,14 @@ bool Server::ReadPacketData(u8* pData, u16 length){
         }
         // Received enough data
         if (mBufferLength >= length) {
-            memcpy(pData, mBuffer, length);
+            memcpy(p_data, mBuffer, length);
             mBufferOffset = length;
             return true;
         }
         // Copy block to data
-        memcpy(pData, mBuffer, mBufferLength);
+        memcpy(p_data, mBuffer, mBufferLength);
         length -= mBufferLength;
-        pData += mBufferLength;
+        p_data += mBufferLength;
     }
     // if size in buffer is exactly the same as length
     return true;
@@ -248,7 +248,7 @@ void Server::RecvPacket(Packet& packet) {
     }
 }
 
-void Server::ActivateModule(u8 serial, mod::Module moduleId, Packet& packet) {
+void Server::ActivateModule(u8 serial, mod::Module module_id, Packet& packet) {
     // Find a free session slot
     // TODO implement this
 }

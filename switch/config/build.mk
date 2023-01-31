@@ -1,7 +1,7 @@
 # Makefile for the main nso and npdm
 
-ifeq ($(strip $(BOTW_VERSION)),)
-$(error "BOTW_VERSION is not set. Please run the makefile through the wrapper with `just build 150` or `just build 160`")
+ifeq ($(strip $(BOTW_VERSION_DEFINES)),)
+$(error "BOTW_VERSION_DEFINES is not set. Please run the makefile through the wrapper with `just build 150` or `just build 160`")
 endif
 
 ifeq ($(strip $(DEVKITPRO)),)
@@ -43,7 +43,7 @@ $(EXLAUNCH_SRC)/lib \
 $(LIB_DIR)/botw/src \
 $(LIB_DIR)/botw/lib/NintendoSDK/include \
 $(LIB_DIR)/botw/lib/sead/include \
-
+$(ROOT_DIR)/tools/botw-link/include \
 
 # VPATH for make to search for files
 VPATH	:=	$(foreach dir,$(ALL_SOURCES_DIRS),$(CURDIR)/$(dir))
@@ -74,7 +74,7 @@ INCLUDE	:=	\
 $(foreach dir,$(ALL_INCLUDE_DIRS),-I$(CURDIR)/$(dir)) \
 $(foreach dir,$(LIBDIRS),-I$(dir)/include)
 # Defines
-DEFINES := -D__SWITCH__ -DSWITCH -DNNSDK -DEXL_LOAD_KIND=Module -DEXL_LOAD_KIND_ENUM=2 -DEXL_PROGRAM_ID=0x$(PROGRAM_ID) -DBOTW_VERSION=$(BOTW_VERSION)
+DEFINES := -D__SWITCH__ -DSWITCH -DNNSDK -DEXL_LOAD_KIND=Module -DEXL_LOAD_KIND_ENUM=2 -DEXL_PROGRAM_ID=0x$(PROGRAM_ID) $(BOTW_VERSION_DEFINES)
 # Architecture
 ARCH	:= -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec
 # C flags

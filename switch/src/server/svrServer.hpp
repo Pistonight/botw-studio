@@ -51,11 +51,11 @@ private:
 
     bool ReadPacket(Packet& packet);
     bool ReadPacketLength(u16* length);
-    bool ReadPacketData(u8* pData, u16 length);
+    bool ReadPacketData(u8* p_data, u16 length);
 
     void GreetClient();
     void RecvPacket(Packet& packet);
-    void ActivateModule(u8 serial, mod::Module moduleId, Packet& packet);
+    void ActivateModule(u8 serial, mod::Module module_id, Packet& packet);
 };
 
 void RunServer();

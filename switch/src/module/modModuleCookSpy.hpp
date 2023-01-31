@@ -12,34 +12,37 @@ class Server;
 namespace uks::mod {
 
 struct CookSpyData {
-    u8 mCritChance;
+    u8 mCritChance = 0;
+    u8 mRngRoll = 0;
+    bool mIsCrit = false;
 };
-    
+
+CookSpyData& GetCookSpyData();
+
 class ModuleCookSpy {
 public:
-    static ModuleCookSpy& GetInstance()
-    {
-        return sInstance;
-    }
+    static ModuleCookSpy& GetInstance();
     
-private:
-    static ModuleCookSpy sInstance;
+public:
     ModuleCookSpy() {}
 
 public:
     ModuleCookSpy(ModuleCookSpy const&) = delete;
     void operator=(ModuleCookSpy const&) = delete;
     // Init the module, install hooks etc
-    void Init() {}
+    void Init();
 
 private:
     ListenerMgr<CookSpyData> mListenerMgr;
 public:
-    void AddListener(Listener<CookSpyData>* pListener) {
-        mListenerMgr.AddListener(pListener);
+    void AddListener(Listener<CookSpyData>* p_listener) {
+        mListenerMgr.AddListener(p_listener);
     }
-    void RemoveListener(Listener<CookSpyData>* pListener) {
-        mListenerMgr.RemoveListener(pListener);
+    void RemoveListener(Listener<CookSpyData>* p_listener) {
+        mListenerMgr.RemoveListener(p_listener);
+    }
+    void Nofity() {
+        mListenerMgr.Notify(GetCookSpyData());
     }
 
 };
@@ -52,8 +55,8 @@ public:
     SessionCookSpy() {}
     virtual ~SessionCookSpy() {}
 
-    void SetServer(svr::Server* pServer) { mpServer = pServer; }
-    void SetSessionMgr(SessionMgrCookSpy* pMgr) { mpSessionMgr = pMgr; }
+    void SetServer(svr::Server* p_server) { mpServer = p_server; }
+    void SetSessionMgr(SessionMgrCookSpy* p_mgr) { mpSessionMgr = p_mgr; }
 
     virtual void Activate() override;
     virtual void Deactivate() override;

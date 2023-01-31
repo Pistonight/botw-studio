@@ -35,21 +35,21 @@ bool Packet::WriteInt16At(u32 i, u16 value) {
     return true;
 }
 
-s32 Packet::ReadAsciiAt(u32 i, char* buffer, u32 bufferLength) {
+s32 Packet::ReadAsciiAt(u32 i, char* buffer, u32 buffer_length) {
     u8 next = 0;
     u32 j = 0;
     while (ReadInt8At(i++, next)) {
         if (next == 0) {
-            if (j < bufferLength) {
+            if (j < buffer_length) {
                 buffer[j] = 0;
             }
             // ensure null terminator
-            buffer[bufferLength-1] = 0;
+            buffer[buffer_length-1] = 0;
             return j;
         }
         // If buffer is not enough to fit all content
         // keep reading until we find the null terminator
-        if (j < bufferLength) {
+        if (j < buffer_length) {
             buffer[j++] = next;
         }
     }
@@ -57,7 +57,7 @@ s32 Packet::ReadAsciiAt(u32 i, char* buffer, u32 bufferLength) {
     return -1;
 }
 
-s32 Packet::WriteAsciiAt(u32 i, const char* buffer, u32 bufferLength) {
+s32 Packet::WriteAsciiAt(u32 i, const char* buffer, u32 buffer_length) {
     u8 next = buffer[0];
     u32 j = 0;
     while(WriteInt8At(i++, next)) {
@@ -65,7 +65,7 @@ s32 Packet::WriteAsciiAt(u32 i, const char* buffer, u32 bufferLength) {
             return j;
         }
         j++;
-        if (j >= bufferLength){
+        if (j >= buffer_length){
             // ensure null terminator
             next = 0;
         }else{
