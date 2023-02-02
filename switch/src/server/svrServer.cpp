@@ -90,11 +90,7 @@ bool Server::Init() {
     sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = nn::socket::InetHtons(PORT);
-    #if BOTW_VERSION == 150
-    nn::socket::InetAton("0.0.0.0", reinterpret_cast<in_addr*>(&addr.sin_addr.s_addr));
-    #else
     nn::socket::InetAton("0.0.0.0", reinterpret_cast<nn::socket::InAddr*>(&addr.sin_addr.s_addr));
-    #endif
     if(nn::socket::Bind(mServerSocket, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0){
         sStatus = 4;
         return false;

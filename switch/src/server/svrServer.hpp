@@ -7,15 +7,6 @@
 #define PORT 64533
 #define BUFFER_LENGTH 0x1000
 
-// 1.5.0 SDK nn::socket::InetAton is not compatible with 1.6.0
-// Duplicating declaration heres
-struct in_addr;
-namespace nn::socket {
-u32 InetAton(const char* addressStr, in_addr* addressOut);
-}
-
-
-
 namespace uks::svr {
 
 class Packet;

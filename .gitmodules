@@ -7,3 +7,6 @@
 [submodule "switch/tools/botw-link"]
 	path = switch/tools/botw-link
 	url = git@github.com:iTNTPiston/botw-link
+[submodule "switch/libs/nnheaders"]
+	path = switch/libs/nnheaders
+	url = git@github.com:open-ead/nnheaders

@@ -40,8 +40,8 @@ ALL_INCLUDE_DIRS	:=	\
 $(SOURCE_DIR) \
 $(EXLAUNCH_SRC) \
 $(EXLAUNCH_SRC)/lib \
+$(LIB_DIR)/nnheaders/include \
 $(LIB_DIR)/botw/src \
-$(LIB_DIR)/botw/lib/NintendoSDK/include \
 $(LIB_DIR)/botw/lib/sead/include \
 $(ROOT_DIR)/tools/botw-link/include \
 

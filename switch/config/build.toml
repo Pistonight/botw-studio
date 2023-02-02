@@ -12,6 +12,8 @@ ignored_symbols = [
     ".data",
     "__register_frame_info",
     "__deregister_frame_info",
+    "fake_heap_start",
+    "fake_heap_end",
 ]
 
 # Rename exlaunch template files so they are excluded from the build
